@@ -4,7 +4,7 @@ CPPFLAGS	= #-Wall -Wextra -Werror -std=c++98
 
 NAME 	= ircserv
 
-SRCS	= src/main.cpp src/Server.cpp 
+SRCS 	:= $(wildcard ./src/*.cpp ./cmds/*.cpp) 
 
 OBJS	= $(SRCS:%.cpp=%.o)
 

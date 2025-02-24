@@ -41,37 +41,75 @@ void Server::handleNewConnection() {
 		close(clientFd), std::cerr << "fcntl error when add new client : " << strerror(errno) << std::endl;
 		return; 
 	}
+	Client *newClient = new Client(clientFd);
+	_clients[clientFd] = newClient;
 	_pollFds.push_back((pollfd){clientFd, POLLIN, 0});
 	std::cout << "New connection from " << inet_ntoa(clientAddress.sin_addr) << ":" << ntohs(clientAddress.sin_port) << std::endl;
 }
 
+// void Server::handleClientData(int clientFd) {
+//     char buffer[1024];
+//     ssize_t bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
+
+//     if (bytesRead <= 0) {
+//         if (bytesRead == 0) {
+//             std::cout << "Client disconnected" << std::endl;
+//         } else {
+//             std::cerr << "recv error: " << strerror(errno) << std::endl;
+//         }
+//         closeClient(clientFd);
+//         return;
+//     }
+
+//     buffer[bytesRead] = '\0';
+// 	std::string message(buffer);
+//     std::cout << "Received: " << buffer << std::endl;
+
+// 	Client* client = _clients[clientFd];
+	
+// 	std::istringstream iss(message);
+// 	std::string commandLine;
+// 	while(std::getline(iss, commandLine)) {
+// 		commandLine = commandLine.substr(0, commandLine.find_last_not_of("\r\n") + 1);
+// 		processCommand(client, commandLine);
+// 	}
+// }
+
 void Server::handleClientData(int clientFd) {
-    char buffer[1337];
+    char buffer[1024];
     ssize_t bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
 
     if (bytesRead <= 0) {
         if (bytesRead == 0) {
             std::cout << "Client disconnected" << std::endl;
-        } else {
+            closeClient(clientFd);
+            return;
+        } 
+        else if (errno == EAGAIN || errno == EWOULDBLOCK) {
+            // No data available yet, just return and wait for the next poll event
+            return;
+        } 
+        else {
             std::cerr << "recv error: " << strerror(errno) << std::endl;
+            closeClient(clientFd);
+            return;
         }
-        closeClient(clientFd);
-        return;
     }
 
     buffer[bytesRead] = '\0';
-	std::string message(buffer);
+    std::string message(buffer);
     std::cout << "Received: " << buffer << std::endl;
 
-	Client* client = _clients[clientFd];
-	
-	std::istringstream iss(message);
-	std::string commandLine;
-	while(std::getline(iss, commandLine)) {
-		commandLine = commandLine.substr(0, commandLine.find_last_not_of("\r\n") + 1);
-		processCommand(client, commandLine);
-	}
+    Client* client = _clients[clientFd];
+    
+    std::istringstream iss(message);
+    std::string commandLine;
+    while(std::getline(iss, commandLine)) {
+        commandLine = commandLine.substr(0, commandLine.find_last_not_of("\r\n") + 1);
+        processCommand(client, commandLine);
+    }
 }
+
 
 void Server::processCommand(Client* client, const std::string& command) {
 	std::istringstream iss(command);
@@ -84,6 +122,8 @@ void Server::processCommand(Client* client, const std::string& command) {
 	if (cmd == "PASS") handlePass(client, params);
 	else if (cmd == "NICK") handleNick(client, params);
 	else if (cmd == "USER") handleUser(client, params);
+	else if (!client->isRegistred())
+		std::cout << "your not registred!!!!\n";
 	
 }
 
@@ -94,6 +134,11 @@ void Server::closeClient(int clientFd) {
             break;
         }
     }
+	std::map<int, Client*>::iterator it = _clients.find(clientFd);
+	if (it != _clients.end()) {
+		delete it->second;
+		_clients.erase(it);
+	}
     close(clientFd);
 }
 
@@ -119,6 +164,26 @@ Server::Server(const Server &obj) {
 Server &Server::operator= (const Server &obj) {
 
 	return (*this);
+}
+
+void Server::authenticateClient(Client *client) {
+	if (client->hasPassword() && client->hasNickName() && !client->isRegistred()) {
+		client->setIsRegistered(true);
+		welcomingMessage(client);
+	}
+}
+
+void Server::welcomingMessage(Client* client) const {
+	sendReplay(client->getFd(), RPL_WELCOME(client->getNickName()));
+	sendReplay(client->getFd(), RPL_YOURHOST(client->getNickName()));
+	sendReplay(client->getFd(), RPL_CREATED(client->getNickName()));
+	sendReplay(client->getFd(), RPL_MYINFO(client->getNickName()));
+
+}
+
+void Server::sendReplay(int fd, const std::string& response) const {
+	std::string formatted = response + "\r\n";
+    send(fd, formatted.c_str(), formatted.size(), 0);
 }
 
 void Server::run() {

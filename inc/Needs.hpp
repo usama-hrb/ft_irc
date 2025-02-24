@@ -12,6 +12,7 @@
 #include <csignal> 
 #include <map>
 #include <sstream>
+#include "ReplyCodes.hpp"
 
 
 #define RED "\e[1;31m"

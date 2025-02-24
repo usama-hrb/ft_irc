@@ -38,11 +38,13 @@ class Server {
 	
 	// Command processing
 		void processCommand(Client* client, const std::string& command);
-	    // void authenticateClient(Client* client);
+	    void authenticateClient(Client* client);
+		void welcomingMessage(Client* client) const;
+		bool isValidNickname(const std::string& nickname);
 
 	// Utility funcs
 		bool validatePassword(const std::string& input) const;
-	    void sendResponse(int fd, const std::string& response) const;
+	    void sendReplay(int fd, const std::string& response) const;
 
 	// Command hemdlers
 		void handlePass(Client* client, const std::vector<std::string>& params);
