@@ -21,4 +21,5 @@ void Server::handlePass(Client *client, const std::vector<std::string> &params) 
 		return;
 	}
 	client->setPassword(true);
+	authenticateClient(client);
 }

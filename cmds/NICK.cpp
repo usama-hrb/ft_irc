@@ -20,6 +20,7 @@ void Server::handleNick(Client* client, const std::vector<std::string>& params) 
         }
     }
     client->setNickName(nickname);
+	authenticateClient(client);
 }
 
 // Utility function
