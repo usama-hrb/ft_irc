@@ -15,3 +15,4 @@
 #define ERR_ERRONEUSNICKNAME(nickname, nick) ":FT_irc 432 " + nickname + " " + nick + " :Erroneus nickname" POSTFIX
 #define ERR_NICKNAMEINUSE(nickname, nick) ":FT_irc 433 " + nickname + " " + nick + " :Nickname is already in use" POSTFIX
 #define ERR_UNKNOWNCOMMAND(command) ":FT_irc 421 " + command + ":Unknown command" POSTFIX
+#define ERR_NOTREGISTERED(nickname) ": 451 " + nickname + " :You have not registered!" POSTFIX

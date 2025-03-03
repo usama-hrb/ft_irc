@@ -14,6 +14,7 @@
 #include <cstring>
 #include <sstream>
 #include "ReplyCodes.hpp"
+#include "User.hpp"
 
 
 #define RED "\e[1;31m"

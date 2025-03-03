@@ -1,9 +1,11 @@
 #pragma once
 
-#include "Needs.hpp"
+// #include "Needs.hpp"
 #include "Client.hpp"
-#include "Channel.hpp"
+#include "User.hpp"
 #include "ReplyCodes.hpp"
+#include "Channel.hpp"
+// #include ""
 
 class Server {
 	public:
@@ -21,7 +23,7 @@ class Server {
 	// Connect management
 		std::vector<pollfd> 			_pollFds;
 		std::map<int, Client*> 			_clients;
-		// std::map<std::string, Channel> 	_channels;
+		std::vector<Channel*> 			_channels;
 		bool 							_running;
 	
 	//Setup methods
@@ -61,4 +63,27 @@ class Server {
 	// Prevent copying
 		Server(const Server&);
 		Server& operator=(const Server&);
+
+
+	void	exec_join_cmd(std::vector<std::string> BUFFER, Server &manager, Client *c);
+
+
+
+
+
+	///
+
+
+	///
+	public:
+
+		Channel*	search_for_channel(std::string channel_name);
+		Client* 	search_for_user(const std::string nickname);
+		Channel*	CreatChannel(std::string channel_name);
+		void		print_channels(){
+			for (int i = 0; (size_t)i < _channels.size(); i++)
+			{
+				std::cout << "--->  channel  :   " << _channels[i]->getName() << std::endl;
+			}
+		};
 };
