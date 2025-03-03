@@ -3,12 +3,15 @@
 
 
 void Server::handleUser(Client *client, const std::vector<std::string> &params) {
+	std::string response;
 	if (client->isRegistred()) {
-		std::cout << "Already registred!!!!!\n";
+		response = ERR_ALREADYREGISTRED(std::string("*"));
+		sendReplay(client->getFd(), response);
 		return;
 	}
 	if (params.size() < 4) {
-		std::cout << "Username if small!!!\n";
+		response = ERR_NEEDMOREPARAMS(std::string("USER"));
+		sendReplay(client->getFd(), response);
 		return;
 	}
 	client->setUserName(params[0]);

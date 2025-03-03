@@ -1,4 +1,5 @@
 #include "../inc/Server.hpp"
+#include <unistd.h>
 
 void Server::createSock() {
 	_serverFd = socket(AF_INET, SOCK_STREAM, 0);
@@ -26,6 +27,8 @@ void Server::bindSock() {
 void Server::startListening() {
 	if (listen(_serverFd, SOMAXCONN) == -1)
 		close(_serverFd), throw (std::runtime_error("listen error : " + std::string(strerror(errno))));
+	std::cout << GRE << "Server is running on port " << _port << std::endl;
+	std::cout << YEL << "Waiting for connections..." << std::endl;
 }
 
 void Server::handleNewConnection() {
@@ -44,36 +47,9 @@ void Server::handleNewConnection() {
 	Client *newClient = new Client(clientFd);
 	_clients[clientFd] = newClient;
 	_pollFds.push_back((pollfd){clientFd, POLLIN, 0});
-	std::cout << "New connection from " << inet_ntoa(clientAddress.sin_addr) << ":" << ntohs(clientAddress.sin_port) << std::endl;
+	std::cout << BLU << "New client connected with fd: " << clientFd << END << std::endl;
 }
 
-// void Server::handleClientData(int clientFd) {
-//     char buffer[1024];
-//     ssize_t bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
-
-//     if (bytesRead <= 0) {
-//         if (bytesRead == 0) {
-//             std::cout << "Client disconnected" << std::endl;
-//         } else {
-//             std::cerr << "recv error: " << strerror(errno) << std::endl;
-//         }
-//         closeClient(clientFd);
-//         return;
-//     }
-
-//     buffer[bytesRead] = '\0';
-// 	std::string message(buffer);
-//     std::cout << "Received: " << buffer << std::endl;
-
-// 	Client* client = _clients[clientFd];
-	
-// 	std::istringstream iss(message);
-// 	std::string commandLine;
-// 	while(std::getline(iss, commandLine)) {
-// 		commandLine = commandLine.substr(0, commandLine.find_last_not_of("\r\n") + 1);
-// 		processCommand(client, commandLine);
-// 	}
-// }
 
 void Server::handleClientData(int clientFd) {
     char buffer[1024];
@@ -81,7 +57,7 @@ void Server::handleClientData(int clientFd) {
 
     if (bytesRead <= 0) {
         if (bytesRead == 0) {
-            std::cout << "Client disconnected" << std::endl;
+            std::cout << RED << "Client with fd : " << clientFd << " disconnected" << END << std::endl;
             closeClient(clientFd);
             return;
         } 
@@ -98,7 +74,7 @@ void Server::handleClientData(int clientFd) {
 
     buffer[bytesRead] = '\0';
     std::string message(buffer);
-    std::cout << "Received: " << buffer << std::endl;
+    std::cout << "-> " << message << std::endl;
 
     Client* client = _clients[clientFd];
     
@@ -107,6 +83,7 @@ void Server::handleClientData(int clientFd) {
     while(std::getline(iss, commandLine)) {
         commandLine = commandLine.substr(0, commandLine.find_last_not_of("\r\n") + 1);
         processCommand(client, commandLine);
+		usleep(100);
     }
 }
 
@@ -115,6 +92,7 @@ void Server::processCommand(Client* client, const std::string& command) {
 	std::istringstream iss(command);
 	std::vector<std::string> params;
 	std::string cmd;
+	std::string response;
 
 	iss >> cmd;
 	for (std::string param; iss >> param; )
@@ -122,9 +100,10 @@ void Server::processCommand(Client* client, const std::string& command) {
 	if (cmd == "PASS") handlePass(client, params);
 	else if (cmd == "NICK") handleNick(client, params);
 	else if (cmd == "USER") handleUser(client, params);
-	else if (!client->isRegistred())
-		std::cout << "your not registred!!!!\n";
-	
+	else {
+		response = ERR_UNKNOWNCOMMAND(cmd);
+		sendReplay(client->getFd(), response);
+	}
 }
 
 void Server::closeClient(int clientFd) {
@@ -178,11 +157,10 @@ void Server::welcomingMessage(Client* client) const {
 	sendReplay(client->getFd(), RPL_YOURHOST(client->getNickName()));
 	sendReplay(client->getFd(), RPL_CREATED(client->getNickName()));
 	sendReplay(client->getFd(), RPL_MYINFO(client->getNickName()));
-
 }
 
 void Server::sendReplay(int fd, const std::string& response) const {
-	std::string formatted = response + "\r\n";
+	std::string formatted = response;
     send(fd, formatted.c_str(), formatted.size(), 0);
 }
 

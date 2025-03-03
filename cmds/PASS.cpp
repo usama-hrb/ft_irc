@@ -3,16 +3,20 @@
 
 
 void Server::handlePass(Client *client, const std::vector<std::string> &params) {
+	std::string response;
 	if (client->hasPassword()) {
-		std::cout << "already registred!!!!\n";
+		std::string msg = ERR_ALREADYREGISTRED(std::string("*"));
+		send(client->getFd(),msg.c_str() , msg.size(), 0);
 		return;
 	}
 	if (params.empty()) {
-		std::cout << "params are not good!!!!!!!\n";
+		response = ERR_NEEDMOREPARAMS(std::string("PASS"));
+		sendReplay(client->getFd(), response);
 		return;
 	}
 	if (params[0] != _password) {
-		std::cout << "incorrect password!!!!!\n";
+		response = ERR_PASSWDMISMATCH(std::string("*"));
+		sendReplay(client->getFd(), response);
 		closeClient(client->getFd());
 		return;
 	}
