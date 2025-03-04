@@ -52,6 +52,12 @@ std::string Channel::getMemberNames() {
     std::string names;
     for (size_t i = 0; i < members.size(); ++i) {
         if (i > 0) names += " ";
+        for (int j = 0; i < operators.size(); j++) {
+            if (operators[j]->getNickName() == members[i]->getNickName()) {
+                names += "@";
+                break;
+            }
+        }
         names += members[i]->getNickName();
     }
     return names;
