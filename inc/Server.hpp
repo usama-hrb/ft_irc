@@ -1,6 +1,6 @@
 #pragma once
 
-// #include "Needs.hpp"
+#include "Needs.hpp"
 #include "Client.hpp"
 #include "User.hpp"
 #include "ReplyCodes.hpp"
@@ -23,7 +23,7 @@ class Server {
 	// Connect management
 		std::vector<pollfd> 			_pollFds;
 		std::map<int, Client*> 			_clients;
-		std::vector<Channel*> 			_channels;
+		Channelmanager 					_channelManager;
 		bool 							_running;
 	
 	//Setup methods
@@ -66,6 +66,7 @@ class Server {
 
 
 	void	exec_join_cmd(std::vector<std::string> BUFFER, Server &manager, Client *c);
+	void handleJoin(Client* client, const std::vector<std::string>& params);
 
 
 
@@ -75,15 +76,15 @@ class Server {
 
 
 	///
-	public:
+	// public:
 
-		Channel*	search_for_channel(std::string channel_name);
-		Client* 	search_for_user(const std::string nickname);
-		Channel*	CreatChannel(std::string channel_name);
-		void		print_channels(){
-			for (int i = 0; (size_t)i < _channels.size(); i++)
-			{
-				std::cout << "--->  channel  :   " << _channels[i]->getName() << std::endl;
-			}
-		};
+	// 	Channel*	search_for_channel(std::string channel_name);
+	// 	Client* 	search_for_user(const std::string nickname);
+	// 	Channel*	CreatChannel(std::string channel_name);
+	// 	void		print_channels(){
+	// 		for (int i = 0; (size_t)i < _channels.size(); i++)
+	// 		{
+	// 			std::cout << "--->  channel  :   " << _channels[i]->getName() << std::endl;
+	// 		}
+	// 	};
 };

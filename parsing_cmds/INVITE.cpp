@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   INVITE.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: souaouri <souaouri@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/03 14:11:54 by souaouri          #+#    #+#             */
-/*   Updated: 2025/03/03 14:50:40 by souaouri         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "parsing.hpp"
 
 void	exec_invite_cmd(std::vector<std::string> BUFFER, Channelmanager &manager)

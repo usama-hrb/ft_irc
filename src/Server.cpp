@@ -102,7 +102,7 @@ void Server::processCommand(Client* client, const std::string& command) {
 	if (cmd == "PASS") handlePass(client, params);
 	else if (cmd == "NICK") handleNick(client, params);
 	else if (cmd == "USER") handleUser(client, params);
-	else if (cmd == "JOIN") exec_join_cmd(params, *this, client);
+	else if (cmd == "JOIN") handleJoin(client, params);
 	// else if (cmd == "PRIVMSG") 
 	else {
 		response = ERR_UNKNOWNCOMMAND(cmd);
@@ -203,38 +203,38 @@ void Server::run() {
 
 ///
 
-Channel* Server::search_for_channel(std::string channel_name)
-{
-	for(int i = 0; (size_t)i < _channels.size(); i++)
-	{
-		if (channel_name == _channels[i]->getName())
-			return (_channels[i]);
-	}
-	return (NULL);
-}
+// Channel* Server::search_for_channel(std::string channel_name)
+// {
+// 	for(int i = 0; (size_t)i < _channels.size(); i++)
+// 	{
+// 		if (channel_name == _channels[i]->getName())
+// 			return (_channels[i]);
+// 	}
+// 	return (NULL);
+// }
 
-Client* Server::search_for_user(std::string nickname)
-{
-    for (size_t i = 0; i < _clients.size(); ++i)
-	{
-        if (_clients[i]->getUserName() == nickname)
-			return _clients[i];
-    }
-    return NULL;
-}
+// Client* Server::search_for_user(std::string nickname)
+// {
+//     for (size_t i = 0; i < _clients.size(); ++i)
+// 	{
+//         if (_clients[i]->getUserName() == nickname)
+// 			return _clients[i];
+//     }
+//     return NULL;
+// }
 
-Channel*	Server::CreatChannel(std::string channel_name)
-{
-	Channel* exist_channel  = search_for_channel(channel_name);
-	if (!exist_channel)
-	{
-		Channel* newChannel = new Channel(channel_name);
-		newChannel->addMember("<NICKNAME>"); //
-		newChannel->addOperator("<NICKNAME>"); //
-		_channels.push_back(newChannel);
-		return newChannel;
-	}
-	//channel.addUser(user);
-	// exist_channel->addMember("<NICKNAME>");
-	return exist_channel;
-}
+// Channel*	Server::CreatChannel(std::string channel_name)
+// {
+// 	Channel* exist_channel  = search_for_channel(channel_name);
+// 	if (!exist_channel)
+// 	{
+// 		Channel* newChannel = new Channel(channel_name);
+// 		newChannel->addMember("<NICKNAME>"); //
+// 		newChannel->addOperator("<NICKNAME>"); //
+// 		_channels.push_back(newChannel);
+// 		return newChannel;
+// 	}
+// 	//channel.addUser(user);
+// 	// exist_channel->addMember("<NICKNAME>");
+// 	return exist_channel;
+// }
