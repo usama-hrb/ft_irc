@@ -10,6 +10,10 @@ std::string Channel::getName() {
     return name;
 }
 
+std::string Channel::getPassword() {return password;} //changed
+
+void Channel::setPassword(std::string password) {password = password;} //changed
+
 void Channel::addMember(Client* client) {
     if (std::find(members.begin(), members.end(), client) == members.end()) {
         members.push_back(client);
@@ -31,7 +35,7 @@ bool Channel::isMember(Client* client) {
 }
 
 bool Channel::removeMember(Client* client) {
-    for (auto it = members.begin(); it != members.end(); ++it) {
+    for (std::vector<Client *>::iterator it = members.begin(); it != members.end(); ++it) {
         if (*it == client) {
             members.erase(it);
             return true;

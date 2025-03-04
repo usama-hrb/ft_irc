@@ -7,12 +7,15 @@
 class Channel {
 private:
     std::string name;
+    std::string password; //changed
     std::vector<Client*> members;
     std::vector<Client*> operators;
 
 public:
     Channel(std::string new_name);
     std::string getName();
+	std::string getPassword();//changed
+	void setPassword(std::string password);//changed
     void addMember(Client* client);
     void addOperator(Client* client);
     bool isOperator(Client* client);

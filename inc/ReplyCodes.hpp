@@ -22,3 +22,4 @@
 #define RPL_ENDOFNAMES(nickname, channel) ":FT_irc 366 " + nickname + " " + channel + " :End of /NAMES list" + POSTFIX
 #define ERR_NOTREGISTERED(none) ":FT_irc 451 " + none + " :You have not registered" + POSTFIX
 #define ERR_NOSUCHCHANNEL(nickname, channel) ":FT_irc 403 " + nickname + " " + channel + " :No such channel" + POSTFIX
+#define RPL_LISTEND(none) ":FT_irc 323 " + none + " :END of list" + POSTFIX
