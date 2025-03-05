@@ -34,9 +34,19 @@ bool Channel::isMember(Client* client) {
     return std::find(members.begin(), members.end(), client) != members.end();
 }
 
-bool Channel::removeMember(Client* client) {
-    for (std::vector<Client *>::iterator it = members.begin(); it != members.end(); ++it) {
-        if (*it == client) {
+bool Channel::isEmpty()
+{
+	if (!members.size())
+		return true;
+	return false;
+}
+
+bool Channel::removeMember(std::string nickname, std::string msg)
+{
+    for (std::vector<Client*>::iterator it = members.begin(); it != members.end(); ++it) {
+        if ((*it)->getNickName() == nickname)
+		{
+			send((*it)->getFd(), msg.c_str(), msg.size(), 0);
             members.erase(it);
             return true;
         }
@@ -44,7 +54,7 @@ bool Channel::removeMember(Client* client) {
     return false;
 }
 
-void Channel::broadcast(const std::string &msg, std::string senderNick) {
+void Channel::broadcast(const std::string &msg, std::string senderNick){
     for (size_t i = 0; i < members.size(); ++i) {
         if (members[i]->getNickName() != senderNick) {
             send(members[i]->getFd(), msg.c_str(), msg.size(), 0);
@@ -67,7 +77,7 @@ std::string Channel::getMemberNames() {
     return names;
 }
 
-Channel* Channelmanager::search_for_channel(std::string channel_name) {
+Channel* ChannelManager::search_for_channel(std::string channel_name) {
     for (size_t i = 0; i < Channels.size(); ++i) {
         if (channel_name == Channels[i]->getName()) {
             return Channels[i];
@@ -76,7 +86,18 @@ Channel* Channelmanager::search_for_channel(std::string channel_name) {
     return NULL;
 }
 
-Channel* Channelmanager::CreatChannel(std::string channel_name) {
+// Client* ChannelManager::search_for_user(std::string nickname)
+// {
+//     for (size_t i = 0; i < Client.size(); ++i) {
+//         if (nickname == Channels[i]->getName()) {
+//             return Channels[i];
+//         }
+//     }
+//     return NULL;
+// }
+
+
+Channel* ChannelManager::CreatChannel(std::string channel_name) {
     Channel* exist_channel = search_for_channel(channel_name);
     if (!exist_channel) {
         Channel* newChannel = new Channel(channel_name);
@@ -84,4 +105,15 @@ Channel* Channelmanager::CreatChannel(std::string channel_name) {
         return newChannel;
     }
     return exist_channel;
+}
+
+void ChannelManager::removeChannel(const std::string& channelName)
+{
+    for (std::vector<Channel*>::iterator it = Channels.begin(); it != Channels.end(); ++it) {
+        if ((*it)->getName() == channelName) {
+            delete *it;
+            Channels.erase(it);
+            return;
+        }
+    }
 }

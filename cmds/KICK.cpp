@@ -2,7 +2,7 @@
 
 void Server::handleKick(Client* client, const std::vector<std::string>& params)
 {
-	std::string channel_name = params[0];
+	std::string channelName = params[0];
 	std::string  nickname = params[1];
 
 	int i = 0;
@@ -12,21 +12,36 @@ void Server::handleKick(Client* client, const std::vector<std::string>& params)
 		return ;
 	}
 	// -----> check for my user is operator "isOperatoe()"
-	if (!_channelManager.search_for_channel(channel_name))
+	Channel* channel = _channelManager.search_for_channel(channelName);
+	if (!channel)
 	{
-		sendReplay(client->getFd(), ERR_NOSUCHCHANNEL(client->getNickName(), channel_name));
+		sendReplay(client->getFd(), ERR_NOSUCHCHANNEL(client->getNickName(), channelName));
 		return ;		
 	}
-	for(int i = 0; (size_t)i < _channelManager.Channels.size(); i++)
-	{
-		if (channel_name == _channelManager.Channels[i]->getName())
-		{}
-	}
-	if (!_channelManager.Channels[i]->removeMember(client))
+	channel->print_members();
+	std::cout << "\n\n====================================================\n\n";
+	
+	std::string kickMsg = ":" + client->getNickName() + " KICK " + channelName + " " + nickname + " :Kicked by operator";
+	if (!channel->removeMember(nickname, kickMsg))
 	{
 		std::cout << "401" << " <NICKNAME> " << nickname << " :No such nick" << std::endl;
 		return ;
 	}
-	//brodcast
-	///remove channel if is empty
+	channel->print_members();
+	channel->broadcast(kickMsg, client->getNickName());  // Notify everyone in the channel
+
+// If the kicked user is still connected, notify them
+// Client* kickedClient = _clientManager.getClientByNick(nickname);
+// if (kickedClient) {
+//     sendReplay(kickedClient->getFd(), kickMsg);
+// }
+
+// If the channel is empty after kick, remove it
+if (channel->isEmpty()) {
+    _channelManager.removeChannel(channelName);
+}
+	// sendReplay(client->getFd(), RPL_NOTOPIC(client->getNickName(), channelName));
+	// std::string names = channel->getMemberNames();
+	// sendReplay(client->getFd(), RPL_NAMREPLY(client->getNickName(), channelName, names));
+	// sendReplay(client->getFd(), RPL_ENDOFNAMES(client->getNickName(), channelName));
 }

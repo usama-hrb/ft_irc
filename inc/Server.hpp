@@ -23,7 +23,7 @@ class Server {
 	// Connect management
 		std::vector<pollfd> 			_pollFds;
 		std::map<int, Client*> 			_clients;
-		Channelmanager 					_channelManager;
+		ChannelManager 					_channelManager;
 		bool 							_running;
 	
 	//Setup methods
