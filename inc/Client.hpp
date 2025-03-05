@@ -7,7 +7,7 @@ class Client {
 	std::string _nickName;
 	std::string _userName;
 	std::string _realName;
-	std::string _hostName;
+	std::string _clientIp;
 	bool _hasPassword;
 	bool _hasNickName;
 	bool _hasUserName;
@@ -19,6 +19,7 @@ public:
 
 	// GETTERS
 	int getFd() const;
+	std::string getClientIp() const;
 	std::string getNickName() const;
 	std::string getUserName() const;
 	std::string getRealName() const;

@@ -71,6 +71,11 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
             if (!namesStr.empty()) namesStr += " ";
             namesStr += names[j];
         }
+		if (channel->getTopic().empty()) {
+			sendReplay(client->getFd(), RPL_NOTOPIC(client->getNickName(), channelName));
+		} else {
+			sendReplay(client->getFd(), RPL_TOPIC(channelName, channel->getTopic()));
+		}
         sendReplay(client->getFd(), RPL_NAMREPLY(client->getNickName(), channelName, namesStr));
         sendReplay(client->getFd(), RPL_ENDOFNAMES(client->getNickName(), channelName));
 	}

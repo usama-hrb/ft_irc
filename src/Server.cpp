@@ -27,8 +27,9 @@ void Server::bindSock() {
 void Server::startListening() {
 	if (listen(_serverFd, SOMAXCONN) == -1)
 		close(_serverFd), throw (std::runtime_error("listen error : " + std::string(strerror(errno))));
-	std::cout << GRE << "Server is running on port " << _port << std::endl;
-	std::cout << YEL << "Waiting for connections..." << std::endl;
+	std::cout << GRE << SERV() << END << std::endl;
+	std::cout << GRE << "\tServer is running on port " << _port << std::endl;
+	std::cout << YEL << "\tWaiting for connections..." << std::endl;
 }
 
 void Server::handleNewConnection() {
@@ -99,14 +100,16 @@ void Server::processCommand(Client* client, const std::string& command) {
 		params.push_back(param);
 	// std::cout << "==> " << cmd << std::endl;
 	// std::cout << GRE << "done" << END << std::endl;
-	if (cmd == "PASS") handlePass(client, params);
-	else if (cmd == "NICK") handleNick(client, params);
-	else if (cmd == "USER") handleUser(client, params);
+	if (cmd == "PASS" || cmd == "pass") handlePass(client, params);
+	else if (cmd == "NICK" || cmd == "nick") handleNick(client, params);
+	else if (cmd == "USER" || cmd == "user") handleUser(client, params);
 	else if (cmd == "JOIN" || cmd == "join") handleJoin(client, params);
 	else if (cmd == "LIST" || cmd == "list") handleList(client, params);
 	else if (cmd == "KICK" || cmd == "kick") handleKick(client, params);
-	// else if (cmd == "PRIVMSG") 
-	else {
+	else if (cmd == "TOPIC" || cmd == "topic") handleTopic(client, params);
+	else if (cmd == "PRIVMSG" || cmd == "privmsg") handlePrivmsg(client, params);
+	else if (cmd != "PONG" && cmd != "PING") {
+		std::cout << " this is it ---> < "  << cmd << " >" << std::endl;
 		response = ERR_UNKNOWNCOMMAND(cmd);
 		sendReplay(client->getFd(), response);
 	}

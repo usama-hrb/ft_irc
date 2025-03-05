@@ -4,9 +4,22 @@
 #include "../inc/Client.hpp"
 #include <algorithm>
 
-Channel::Channel(std::string new_name) : name(new_name) {}
+Channel::Channel(std::string new_name) : name(new_name), _topic("") {}
 
 size_t Channel::getMemrbersNum() {return members.size();}
+
+void Channel::setTopic(const std::string &newTopic) {
+    if (newTopic.size() > 100) {
+        _topic = newTopic.substr(0, 100);
+    } else {
+       _topic = newTopic;
+    }
+}
+
+
+std::string Channel::getTopic() const {
+    return _topic;
+}
 
 std::string Channel::getName() {
     return name;

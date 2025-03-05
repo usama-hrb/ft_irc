@@ -10,8 +10,11 @@ private:
     std::string password; //changed
     std::vector<Client*> members;
     std::vector<Client*> operators;
+    std::string _topic;
 
 public:
+    void setTopic(const std::string &newTopic);
+    std::string getTopic() const;
     size_t getMemrbersNum();
     Channel(std::string new_name);
     std::string getName();
