@@ -99,11 +99,12 @@ void Server::processCommand(Client* client, const std::string& command) {
 		params.push_back(param);
 	// std::cout << "==> " << cmd << std::endl;
 	// std::cout << GRE << "done" << END << std::endl;
-	// if (cmd == "PASS") handlePass(client, params);
-	// else if (cmd == "NICK") handleNick(client, params);
-	// else if (cmd == "USER") handleUser(client, params);
-	if (cmd == "JOIN" || cmd == "join") handleJoin(client, params);
+	if (cmd == "PASS") handlePass(client, params);
+	else if (cmd == "NICK") handleNick(client, params);
+	else if (cmd == "USER") handleUser(client, params);
+	else if (cmd == "JOIN" || cmd == "join") handleJoin(client, params);
 	else if (cmd == "LIST" || cmd == "list") handleList(client, params);
+	else if (cmd == "KICK" || cmd == "kick") handleKick(client, params);
 	// else if (cmd == "PRIVMSG") 
 	else {
 		response = ERR_UNKNOWNCOMMAND(cmd);

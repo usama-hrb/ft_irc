@@ -77,8 +77,6 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
 	for(int i = 0; i < channels.size(); i++)
 	{
 		std::string channelName = channels[i];
-		if (!params[i + 1].empty())
-			_channelManager.Channels[i]->setPassword(params[i + 1]);
 		if (channelName[0] != '#') {
 			sendReplay(client->getFd(), ERR_NOSUCHCHANNEL(client->getNickName(), channelName));
 			continue;
@@ -88,16 +86,26 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
 		if (!channel)
 		{
 			hasChannel = 1;
-			if (!params[i + 1].empty())
+			if (params.size() > i + 1 && !params[i + 1].empty())
 			{
-				_channelManager.Channels[i]->setPassword(params[i + 1]);
+				channel->setPassword(params[i + 1]);
 			}
 			channel = _channelManager.CreatChannel(channelName);
 			channel->addOperator(client); // Creator becomes operator
 		}
-		std::string password = params[i + 1];
-		if (channel->getPassword() != password)
-			//err
+		std::string password = "";
+		if (!params[i + 1].empty())
+			password = params[i + 1];
+		// std::string walo = "---------------> : " + password + "\n";
+		// sendReplay(client->getFd(), walo);
+		// std::cout << "+++++++++++++ " << channel->getPassword();
+		// std::cout << "------------- " << password; 
+		// if (channel->getPassword() != password && !hasChannel)
+		// {
+		// 	// std::cout << "++++++ in +++++++\n";
+		// 	std::string msg = "ERR_PASSWORD\n"; //
+		// 	sendReplay(client->getFd(), msg);
+		// }
 		channel->addMember(client);
 
 		std::string joinMsg = ":" + client->getNickName() + " JOIN :" + channelName + "\r\n";
