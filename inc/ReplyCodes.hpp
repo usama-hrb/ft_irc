@@ -1,4 +1,5 @@
 #pragma once
+#include "Needs.hpp"
 
 #define PREFIX ":FT_irc "
 #define POSTFIX "\r\n"
@@ -22,4 +23,25 @@
 #define RPL_ENDOFNAMES(nickname, channel) ":FT_irc 366 " + nickname + " " + channel + " :End of /NAMES list" + POSTFIX
 #define ERR_NOTREGISTERED(none) ":FT_irc 451 " + none + " :You have not registered" + POSTFIX
 #define ERR_NOSUCHCHANNEL(nickname, channel) ":FT_irc 403 " + nickname + " " + channel + " :No such channel" + POSTFIX
+#define ERR_NOTONCHANNEL(channel) ":FT_irc 442 " + channel + " :You're not on that channel" + POSTFIX
+#define ERR_NOSUCHNICK(nickname) ":FT_irc 401 " + nickname + " :No such nick/channel" + POSTFIX
 #define RPL_LISTEND(none) ":FT_irc 323 " + none + " :END of list" + POSTFIX
+
+#define SERV() "\n\
+░██████╗███████╗██████╗░██╗░░░██╗███████╗██████╗░\n\
+██╔════╝██╔════╝██╔══██╗██║░░░██║██╔════╝██╔══██╗\n\
+╚█████╗░█████╗░░██████╔╝╚██╗░██╔╝█████╗░░██████╔╝\n\
+░╚═══██╗██╔══╝░░██╔══██╗░╚████╔╝░██╔══╝░░██╔══██╗\n\
+██████╔╝███████╗██║░░██║░░╚██╔╝░░███████╗██║░░██║\n\
+╚═════╝░╚══════╝╚═╝░░╚═╝░░░╚═╝░░░╚══════╝╚═╝░░╚═╝\n"
+
+#define  WELCOME()  "\e[1;34m\n\
+░██╗░░░░░░░██╗███████╗██╗░░░░░░█████╗░███╗░░░███╗███████╗\n\
+░██║░░██╗░░██║██╔════╝██║░░░░░██╔══██╗████╗░████║██╔════╝\n\
+░╚██╗████╗██╔╝█████╗░░██║░░░░░██║░░██║██╔████╔██║█████╗░░\n\
+░░████╔═████║░██╔══╝░░██║░░░░░██║░░██║██║╚██╔╝██║██╔══╝░░\n\
+░░╚██╔╝░╚██╔╝░███████╗███████╗╚█████╔╝██║░╚═╝░██║███████╗\n\
+░░░╚═╝░░░╚═╝░░╚══════╝╚══════╝░╚════╝░╚═╝░░░░░╚═╝╚══════╝\n\e[0;0m";
+
+
+#define ERR_CHANOPRIVSNEEDED(channel) ":FT_irc 482 " + channel + " :You're not channel operator" + POSTFIX

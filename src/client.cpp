@@ -12,6 +12,8 @@ std::string Client::getRealName() const {return _realName;}
 bool Client::isRegistred() const {return _isRegistred;}
 bool Client::hasPassword() const {return _hasPassword;}
 bool Client::hasNickName() const {return _hasNickName;}
+bool Client::hasUserName() const {return _hasUserName;}
+
 
 // SETTERS
 void Client::setNickName(const std::string& nickName) {

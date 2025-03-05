@@ -25,6 +25,7 @@ public:
 	bool isRegistred() const;
 	bool hasPassword() const;
 	bool hasNickName() const;
+	bool hasUserName() const;
 
 	// SETTERS
 	void setNickName(const std::string& nickName);

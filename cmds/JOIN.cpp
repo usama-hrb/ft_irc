@@ -18,10 +18,10 @@ std::vector<std::string> split(const std::string& str, char delimiter)
 
 void Server::handleJoin(Client* client, const std::vector<std::string>& params) {
 	
-    // if (!client->isRegistred()) {
-    //     sendReplay(client->getFd(), ERR_NOTREGISTERED(std::string("*")));
-    //     return;
-    // }
+    if (!client->isRegistred()) {
+        sendReplay(client->getFd(), ERR_NOTREGISTERED(std::string("*")));
+        return;
+    }
     if (params.empty()) {
         sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("JOIN")));
         return;
@@ -47,8 +47,8 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
 			channel->addOperator(client);
 		}
 		std::string password = "";
-		if (!params[i + 1].empty())
-			password = params[i + 1];
+		// if (!params[i + 1].empty())
+		// 	password = params[i + 1];
 		// std::string walo = "---------------> : " + password + "\n";
 		// sendReplay(client->getFd(), walo);
 		// std::cout << "+++++++++++++ " << channel->getPassword();
@@ -65,13 +65,14 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
 		sendReplay(client->getFd(), joinMsg);
 		channel->broadcast(joinMsg, client->getNickName());
 
-		if (hasChannel)
-		{
-			sendReplay(client->getFd(), RPL_NOTOPIC(client->getNickName(), channelName));
-			std::string names = channel->getMemberNames();
-			sendReplay(client->getFd(), RPL_NAMREPLY(client->getNickName(), channelName, names));
-			sendReplay(client->getFd(), RPL_ENDOFNAMES(client->getNickName(), channelName));
-		}
+		std::vector<std::string> names = channel->getMemberNames();
+        std::string namesStr;
+        for (size_t j = 0; j < names.size(); j++) {
+            if (!namesStr.empty()) namesStr += " ";
+            namesStr += names[j];
+        }
+        sendReplay(client->getFd(), RPL_NAMREPLY(client->getNickName(), channelName, namesStr));
+        sendReplay(client->getFd(), RPL_ENDOFNAMES(client->getNickName(), channelName));
 	}
 }
 

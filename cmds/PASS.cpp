@@ -17,9 +17,8 @@ void Server::handlePass(Client *client, const std::vector<std::string> &params) 
 	if (params[0] != _password) {
 		response = ERR_PASSWDMISMATCH(std::string("*"));
 		sendReplay(client->getFd(), response);
-		closeClient(client->getFd());
 		return;
 	}
 	client->setPassword(true);
-	// authenticateClient(client);
+	authenticateClient(client);
 }

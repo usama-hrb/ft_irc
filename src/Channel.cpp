@@ -6,6 +6,8 @@
 
 Channel::Channel(std::string new_name) : name(new_name) {}
 
+size_t Channel::getMemrbersNum() {return members.size();}
+
 std::string Channel::getName() {
     return name;
 }
@@ -62,17 +64,17 @@ void Channel::broadcast(const std::string &msg, std::string senderNick){
     }
 }
 
-std::string Channel::getMemberNames() {
-    std::string names;
+std::vector<std::string> Channel::getMemberNames() {
+    std::vector<std::string> names;
     for (size_t i = 0; i < members.size(); ++i) {
-        if (i > 0) names += " ";
-        for (int j = 0; i < operators.size(); j++) {
+        std::string name = members[i]->getNickName();
+        for (size_t j = 0; j < operators.size(); j++) {
             if (operators[j]->getNickName() == members[i]->getNickName()) {
-                names += "@";
+                name = "@" + name;  // Prepend @ for operators
                 break;
             }
         }
-        names += members[i]->getNickName();
+        names.push_back(name);
     }
     return names;
 }

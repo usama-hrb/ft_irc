@@ -12,6 +12,7 @@ private:
     std::vector<Client*> operators;
 
 public:
+    size_t getMemrbersNum();
     Channel(std::string new_name);
     std::string getName();
 	std::string getPassword();//changed
@@ -23,7 +24,7 @@ public:
 	bool isEmpty();
     bool removeMember(std::string nickname, std::string msg);
     void broadcast(const std::string &msg, std::string senderNick);
-    std::string getMemberNames(); // Add this for NAMES reply
+    std::vector<std::string> getMemberNames();
 	void		print_members(){
 		std::cout << "---------------------------------------------\n";
 			  std::cout << "Channel Members:\n";
@@ -44,5 +45,6 @@ public:
 	// Client*		search_for_user(std::string nickname);
     Channel*	CreatChannel(std::string channel_name);
 	void		removeChannel(const std::string& channelName);
+    // Client *    getClientByNick(std::string nickname);
 };
 

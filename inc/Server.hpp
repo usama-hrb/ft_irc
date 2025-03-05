@@ -47,14 +47,15 @@ class Server {
 	// Utility funcs
 		bool validatePassword(const std::string& input) const;
 	    void sendReplay(int fd, const std::string& response) const;
+		Client* findClientByNickname(const std::string& nickname);
 
 	// Command hemdlers
 		void handlePass(Client* client, const std::vector<std::string>& params);
 		void handleNick(Client* client, const std::vector<std::string>& params);
 	    void handleUser(Client* client, const std::vector<std::string>& params);
-		// void handleJoin(Client* client, const std::vector<std::string>& params);
+		void handleJoin(Client* client, const std::vector<std::string>& params);
 		void handleList(Client* client, const std::vector<std::string>& params);
-	    // void handlePrivmsg(Client* client, const std::vector<std::string>& params);
+	    void handlePrivmsg(Client* client, const std::vector<std::string>& params);
 	    // void handleMode(Client* client, const std::vector<std::string>& params);
 	    void handleKick(Client* client, const std::vector<std::string>& params);
 	    // void handleInvite(Client* client, const std::vector<std::string>& params);
@@ -66,8 +67,8 @@ class Server {
 		Server& operator=(const Server&);
 
 
-	void	exec_join_cmd(std::vector<std::string> BUFFER, Server &manager, Client *c);
-	void handleJoin(Client* client, const std::vector<std::string>& params);
+	// void	exec_join_cmd(std::vector<std::string> BUFFER, Server &manager, Client *c);
+	// void handleJoin(Client* client, const std::vector<std::string>& params);
 
 
 

@@ -152,7 +152,7 @@ Server &Server::operator= (const Server &obj) {
 }
 
 void Server::authenticateClient(Client *client) {
-	if (client->hasPassword() && client->hasNickName() && !client->isRegistred()) {
+	if (client->hasPassword() && client->hasNickName() && client->hasUserName() && !client->isRegistred()) {
 		client->setIsRegistered(true);
 		welcomingMessage(client);
 	}
