@@ -36,7 +36,6 @@ void Server::handleKick(Client* client, const std::vector<std::string>& params)
 //     sendReplay(kickedClient->getFd(), kickMsg);
 // }
 
-// If the channel is empty after kick, remove it
 if (channel->isEmpty()) {
     _channelManager.removeChannel(channelName);
 }
