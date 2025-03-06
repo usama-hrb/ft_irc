@@ -6,14 +6,15 @@
 
 Channel::Channel(std::string new_name) : name(new_name), _topic("No topic is set") {}
 
+void Channel::removeClient(Client* client) {
+    members.erase(std::remove(members.begin(), members.end(), client), members.end());
+    operators.erase(std::remove(operators.begin(), operators.end(), client), operators.end());
+}
+
 size_t Channel::getMemrbersNum() {return members.size();}
 
 void Channel::setTopic(const std::string &newTopic) {
-    if (newTopic.size() > 100) {
-        _topic = newTopic.substr(0, 100);
-    } else {
        _topic = newTopic;
-    }
 }
 
 
@@ -27,7 +28,9 @@ std::string Channel::getName() {
 
 std::string Channel::getPassword() {return password;} //changed
 
-void Channel::setPassword(std::string password) {password = password;} //changed
+void Channel::setPassword(std::string pass) {
+    password = pass;
+} //changed
 
 void Channel::addMember(Client* client) {
     if (std::find(members.begin(), members.end(), client) == members.end()) {
@@ -49,7 +52,7 @@ bool Channel::isMember(Client* client) {
     return std::find(members.begin(), members.end(), client) != members.end();
 }
 
-bool Channel::_isMember(std::string client_name)
+bool Channel::checkForClient(std::string client_name)
 {
     for (size_t i = 0; i < members.size(); ++i) {
         if (client_name == members[i]->getNickName())

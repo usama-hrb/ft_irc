@@ -2,7 +2,6 @@
 
 #include "Needs.hpp"
 #include "Client.hpp"
-#include "User.hpp"
 #include "ReplyCodes.hpp"
 #include "Channel.hpp"
 // #include ""
@@ -69,34 +68,6 @@ class Server {
 	    void handleTopic(Client* client, const std::vector<std::string>& params);
 	    void handleKick(Client* client, const std::vector<std::string>& params);
 	    void handleInvite(Client* client, const std::vector<std::string>& params);
+	    void handleQuit(Client* client, const std::vector<std::string>& params);
 	    // void handleMode(Client* client, const std::vector<std::string>& params);
-	    // void handleQuit(Client* client, const std::vector<std::string>& params);
-
-	// Prevent copying
-		Server(const Server&);
-		Server& operator=(const Server&);
-
-
-	// void	exec_join_cmd(std::vector<std::string> BUFFER, Server &manager, Client *c);
-	// void handleJoin(Client* client, const std::vector<std::string>& params);
-
-
-
-
-
-	///
-
-
-	///
-	// public:
-
-	// 	Channel*	search_for_channel(std::string channel_name);
-	// 	Client* 	search_for_user(const std::string nickname);
-	// 	Channel*	CreatChannel(std::string channel_name);
-	// 	void		print_channels(){
-	// 		for (int i = 0; (size_t)i < _channels.size(); i++)
-	// 		{
-	// 			std::cout << "--->  channel  :   " << _channels[i]->getName() << std::endl;
-	// 		}
-	// 	};
 };

@@ -17,14 +17,16 @@ void Server::handlePrivmsg(Client* client, const std::vector<std::string>& param
         return;
     }
     if (params.size() < 2) {
+        // std::cout << "here1\n" << std::endl;
         sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("PRIVMSG")));
         return;
     }
     std::string target = params[0];
     // std::string message = params[1];
+    // std::cout << "===>> " << params[1] << std::endl;
     std::vector<std::string> messages(params.begin() + 1, params.end());
-    // std::cout << RED << messages[1] << END << std::endl;
-    if(!messages.empty()) {
+    // std::cout << RED << messages[0] << END << std::endl;
+    if(messages.empty()) {
         std::string response = ERR_NEEDMOREPARAMS(std::string("PRIVMSG"));
         send(client->getFd(), response.c_str(), response.size() , 0);
         return;

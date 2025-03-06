@@ -1,5 +1,4 @@
 #include "../inc/Server.hpp"
-#include <unistd.h>
 
 void Server::createSock() {
 	_serverFd = socket(AF_INET, SOCK_STREAM, 0);
@@ -38,6 +37,9 @@ void Server::handleNewConnection() {
 	socklen_t			clientLen = sizeof(clientAddress);
 	int 				clientFd = accept(_serverFd, (struct sockaddr*)&clientAddress, &clientLen);
 	if (clientFd == -1) {
+		if (errno == EAGAIN || errno == EWOULDBLOCK) {
+			return;
+		}
 		std::cerr << "accept error : " << strerror(errno) << std::endl;
 		return;
 	}
@@ -51,31 +53,55 @@ void Server::handleNewConnection() {
 	std::cout << BLU << "New client connected with fd: " << clientFd << END << std::endl;
 }
 
+	//  char buffer[1024];
+    // ssize_t bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
 
+    // if (bytesRead <= 0) {
+    //     if (bytesRead == 0) {
+    //         std::cout << "Client with fd: " << clientFd << " disconnected" << std::endl;
+    //     } else if (errno == ECONNRESET || errno == EPIPE) {
+    //         std::cerr << "Client with fd: " << clientFd << " forcibly disconnected" << std::endl;
+    //     } else {
+    //         std::cerr << "recv error: " << strerror(errno) << std::endl;
+    //     }
+
+    //     // Call handleQuit() to clean up properly
+    //     Client* client = _clients[clientFd];
+    //     if (client) {
+    //         handleQuit(client, std::vector<std::string>(0));
+    //     }
+
+    //     return;
+    // }
 void Server::handleClientData(int clientFd) {
     char buffer[1024];
     ssize_t bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
 
     if (bytesRead <= 0) {
         if (bytesRead == 0) {
-            std::cout << RED << "Client with fd : " << clientFd << " disconnected" << END << std::endl;
-            closeClient(clientFd);
+			Client* client = _clients[clientFd];
+	        if (client) {
+	            handleQuit(client, std::vector<std::string>(0));
+	        }
             return;
         } 
         else if (errno == EAGAIN || errno == EWOULDBLOCK) {
-            // No data available yet, just return and wait for the next poll event
             return;
         } 
         else {
+			Client* client = _clients[clientFd];
+	        if (client) {
+	            handleQuit(client, std::vector<std::string>(0));
+	        }
             std::cerr << "recv error: " << strerror(errno) << std::endl;
-            closeClient(clientFd);
             return;
         }
     }
 
     buffer[bytesRead] = '\0';
     std::string message(buffer);
-    std::cout << "-> " << message << std::endl;
+	if (message.substr(0, 4) != "PONG" && message.substr(0, 4) != "PING")
+    	std::cout << "-> " << message << std::endl;
 
     Client* client = _clients[clientFd];
     
@@ -109,6 +135,7 @@ void Server::processCommand(Client* client, const std::string& command) {
 	else if (cmd == "TOPIC" || cmd == "topic") handleTopic(client, params);
 	else if (cmd == "INVITE" || cmd == "invite") handleInvite(client, params);
 	else if (cmd == "PRIVMSG" || cmd == "privmsg") handlePrivmsg(client, params);
+	else if (cmd == "QUIT" || cmd == "quit") handleQuit(client, params);
 	else if (cmd != "PONG" && cmd != "PING") {
 		response = ERR_UNKNOWNCOMMAND(cmd);
 		sendReplay(client->getFd(), response);
@@ -116,19 +143,78 @@ void Server::processCommand(Client* client, const std::string& command) {
 }
 
 void Server::closeClient(int clientFd) {
-    for (std::vector<pollfd>::iterator it = _pollFds.begin(); it != _pollFds.end(); ++it) {
-        if (it->fd == clientFd) {
-            _pollFds.erase(it);
+    std::map<int, Client*>::iterator it = _clients.find(clientFd);
+    if (it == _clients.end()) return;
+
+    Client* client = it->second;
+    
+    // Remove client from all channels
+    std::vector<std::string> channelsToRemove;
+    for (std::vector<Channel*>::iterator chanIt = _channelManager.Channels.begin(); chanIt != _channelManager.Channels.end(); ++chanIt) {
+        if ((*chanIt)->isMember(client)) {
+            (*chanIt)->removeClient(client);
+            if ((*chanIt)->isEmpty()) {
+                channelsToRemove.push_back((*chanIt)->getName());
+            }
+        }
+    }
+
+    // Delete empty channels
+    for (size_t i = 0; i < channelsToRemove.size(); ++i) {
+        _channelManager.removeChannel(channelsToRemove[i]);
+    }
+
+    // Remove from pollfds
+    for (std::vector<pollfd>::iterator pollIt = _pollFds.begin(); pollIt != _pollFds.end(); ++pollIt) {
+        if (pollIt->fd == clientFd) {
+            _pollFds.erase(pollIt);
             break;
         }
     }
-	std::map<int, Client*>::iterator it = _clients.find(clientFd);
-	if (it != _clients.end()) {
-		delete it->second;
-		_clients.erase(it);
-	}
+
+    // Remove from client map
+    delete client;
+    _clients.erase(clientFd);
+
     close(clientFd);
 }
+
+
+
+// void Server::closeClient(int clientFd) {
+//     // Find the client
+//     std::map<int, Client*>::iterator it = _clients.find(clientFd);
+//     Client* client = (it != _clients.end()) ? it->second : NULL;
+
+//     if (client) {
+//         // Remove client from all channels
+//         std::vector<std::string> channelsToRemove;
+//         for (std::vector<Channel*>::iterator chanIt = _channelManager.Channels.begin(); chanIt != _channelManager.Channels.end(); ++chanIt) {
+//             (*chanIt)->removeClient(client);
+//             if ((*chanIt)->isEmpty()) {
+//                 channelsToRemove.push_back((*chanIt)->getName());
+//             }
+//         }
+//         // Remove empty channels after iteration to avoid iterator invalidation
+//         for (std::vector<std::string>::iterator nameIt = channelsToRemove.begin(); nameIt != channelsToRemove.end(); ++nameIt) {
+//             _channelManager.removeChannel(*nameIt);
+//         }
+//     }
+//     // Remove from pollfds
+//     for (std::vector<pollfd>::iterator pollIt = _pollFds.begin(); pollIt != _pollFds.end(); ++pollIt) {
+//         if (pollIt->fd == clientFd) {
+//             _pollFds.erase(pollIt);
+//             break;
+//         }
+//     }
+//     // Delete client and remove from map
+//     if (client) {
+//         delete client;
+//         _clients.erase(clientFd);
+//     }
+
+//     close(clientFd);
+// }
 
 Server::Server(int port, const std::string &password) : _port(port), _password(password), _serverFd(-1), _running(false) {
 	createSock();
@@ -145,14 +231,6 @@ Server::~Server() {
     close(_serverFd);
 }
 
-Server::Server(const Server &obj) {
-
-}
-
-Server &Server::operator= (const Server &obj) {
-
-	return (*this);
-}
 
 void Server::authenticateClient(Client *client) {
 	if (client->hasPassword() && client->hasNickName() && client->hasUserName() && !client->isRegistred()) {
@@ -177,7 +255,7 @@ void Server::run() {
 	_running = true;
 	_pollFds.push_back((pollfd){_serverFd, POLLIN, 0});
 
-	while (_running) {
+	while (_running && g_keepRunning) {
 		int state = poll(&_pollFds[0], _pollFds.size(), -1);
 
 		if (state < 0 && errno != EINTR)
@@ -189,6 +267,7 @@ void Server::run() {
 			 	handleClientData(_pollFds[i].fd);
 		}
 	}
+	_running = false; ///check it 
 }
 
 Client* Server::searchForUser(std::string nickname)
@@ -203,62 +282,10 @@ Client* Server::searchForUser(std::string nickname)
 
 void	Server::addInvitedOnly(Client* invitedClient)
 {
-	for (int i = 0; i < _invitedClients.size(); i++)
+	for (size_t i = 0; i < _invitedClients.size(); i++)
 	{
 		if (_invitedClients[i] == invitedClient)
 			return ;
 	}
 	_invitedClients.push_back(invitedClient);
 }
-
-
-
-
-
-
-
-
-
-
-////
-///
-
-
-
-///
-
-// Channel* Server::search_for_channel(std::string channel_name)
-// {
-// 	for(int i = 0; (size_t)i < _channels.size(); i++)
-// 	{
-// 		if (channel_name == _channels[i]->getName())
-// 			return (_channels[i]);
-// 	}
-// 	return (NULL);
-// }
-
-// Client* Server::search_for_user(std::string nickname)
-// {
-//     for (size_t i = 0; i < _clients.size(); ++i)
-// 	{
-//         if (_clients[i]->getUserName() == nickname)
-// 			return _clients[i];
-//     }
-//     return NULL;
-// }
-
-// Channel*	Server::CreatChannel(std::string channel_name)
-// {
-// 	Channel* exist_channel  = search_for_channel(channel_name);
-// 	if (!exist_channel)
-// 	{
-// 		Channel* newChannel = new Channel(channel_name);
-// 		newChannel->addMember("<NICKNAME>"); //
-// 		newChannel->addOperator("<NICKNAME>"); //
-// 		_channels.push_back(newChannel);
-// 		return newChannel;
-// 	}
-// 	//channel.addUser(user);
-// 	// exist_channel->addMember("<NICKNAME>");
-// 	return exist_channel;
-// }

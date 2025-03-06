@@ -1,5 +1,12 @@
 #include "../inc/Server.hpp"
 
+volatile sig_atomic_t g_keepRunning = 1;
+
+void handleShutdown(int signum) {
+    (void)signum;
+    g_keepRunning = 0;
+}
+
 int validPort(std::string sPort) {
     size_t i = 0;
     if (sPort[0] == '+')
@@ -36,6 +43,9 @@ int main(int ac, char** av) {
     }
 
     try {
+        signal(SIGPIPE, SIG_IGN);
+        signal(SIGINT, handleShutdown);
+        signal(SIGTERM, handleShutdown);
         int port = validPort(static_cast<std::string>(av[1]));
         if (port == -1) throw (std::runtime_error(RED"Error : invalid port number  => " + static_cast<std::string>(av[1])));
         if (checkPassword(static_cast<std::string>(av[2])) == -1) throw (std::runtime_error("Error : invalid password please enter a password in range of [5 to 9] printable characters!"));

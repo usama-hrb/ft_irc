@@ -14,7 +14,6 @@
 #include <cstring>
 #include <sstream>
 #include "ReplyCodes.hpp"
-#include "User.hpp"
 
 
 #define RED "\e[1;31m"
@@ -29,3 +28,5 @@
 #define GRA "\e[1;90m"    // Bold Gray
 #define PUR "\e[0;95m"    // Purple (non-bold)
 #define ORA "\e[1;91m"    // Bold Orange (often a bright red shade)
+
+extern volatile sig_atomic_t g_keepRunning;

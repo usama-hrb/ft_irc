@@ -27,7 +27,7 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
         return;
     }
 	std::vector<std::string> channels = split(params[0], ',') ;
-	for(int i = 0; i < channels.size(); i++)
+	for(size_t i = 0; i < channels.size(); i++)
 	{
 		std::string channelName = channels[i];
 		if (channelName[0] != '#') {
@@ -71,14 +71,18 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
             if (!namesStr.empty()) namesStr += " ";
             namesStr += names[j];
         }
-		sendReplay(client->getFd(), RPL_TOPIC(channel->getTopic(),client->getNickName(), channelName));
+		std::string topic = channel->getTopic();
+		if (topic[0] == ':')
+			topic = topic.substr(1);
+		sendReplay(client->getFd(), RPL_TOPIC(topic,client->getNickName(), channelName));
         sendReplay(client->getFd(), RPL_NAMREPLY(client->getNickName(), channelName, namesStr));
         sendReplay(client->getFd(), RPL_ENDOFNAMES(client->getNickName(), channelName));
 	}
 }
 
 void Server::handleList(Client* client, const std::vector<std::string>& params) {
-	for (int i = 0; i < _channelManager.Channels.size(); i++)
+	(void)params;
+	for (size_t i = 0; i < _channelManager.Channels.size(); i++)
 	{
 		sendReplay(client->getFd(), _channelManager.Channels[i]->getName() + "\n");
 	}
