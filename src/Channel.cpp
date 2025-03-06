@@ -49,6 +49,15 @@ bool Channel::isMember(Client* client) {
     return std::find(members.begin(), members.end(), client) != members.end();
 }
 
+bool Channel::_isMember(std::string client_name)
+{
+    for (size_t i = 0; i < members.size(); ++i) {
+        if (client_name == members[i]->getNickName())
+            return true;
+    }
+    return false;
+}
+
 bool Channel::isEmpty()
 {
 	if (!members.size())
@@ -100,17 +109,6 @@ Channel* ChannelManager::search_for_channel(std::string channel_name) {
     }
     return NULL;
 }
-
-// Client* ChannelManager::search_for_user(std::string nickname)
-// {
-//     for (size_t i = 0; i < Client.size(); ++i) {
-//         if (nickname == Channels[i]->getName()) {
-//             return Channels[i];
-//         }
-//     }
-//     return NULL;
-// }
-
 
 Channel* ChannelManager::CreatChannel(std::string channel_name) {
     Channel* exist_channel = search_for_channel(channel_name);

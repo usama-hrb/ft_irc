@@ -39,11 +39,11 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
 		if (!channel)
 		{
 			hasChannel = 1;
+			channel = _channelManager.CreatChannel(channelName);
 			if (params.size() > i + 1 && !params[i + 1].empty())
 			{
 				channel->setPassword(params[i + 1]);
 			}
-			channel = _channelManager.CreatChannel(channelName);
 			channel->addOperator(client);
 		}
 		std::string password = "";

@@ -61,6 +61,10 @@
 
 void Server::handleKick(Client* client, const std::vector<std::string>& params)
 {
+	if (!client->isRegistred()) {
+        sendReplay(client->getFd(), ERR_NOTREGISTERED(std::string("*")));
+        return;
+    }
     // Check for minimum required parameters (channel and nickname)
     if (params.size() < 2)
     {
@@ -95,6 +99,11 @@ void Server::handleKick(Client* client, const std::vector<std::string>& params)
         return;
     }
 
+	if (!channel->_isMember(nickname))
+	{
+		sendReplay(client->getFd(), ERR_NOSUCHNICK(client->getNickName()));
+		return ;
+	}
     // Construct the kick message in proper IRC format
     std::string kickMsg = ":" + client->getNickName() + " KICK " + channelName + " " + nickname + " " + reason + "\r\n";
 

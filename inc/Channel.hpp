@@ -24,6 +24,7 @@ public:
     void addOperator(Client* client);
     bool isOperator(Client* client);
     bool isMember(Client* client);
+    bool _isMember(std::string client_name);
 	bool isEmpty();
     bool removeMember(std::string nickname, std::string msg);
     void broadcast(const std::string &msg, std::string senderNick);

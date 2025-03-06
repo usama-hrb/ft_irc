@@ -1,7 +1,6 @@
 #include "../inc/Needs.hpp"
 #include "../inc/Server.hpp"
 
-
 void Server::handleUser(Client *client, const std::vector<std::string> &params) {
 	std::string response;
 	if (client->isRegistred()) {

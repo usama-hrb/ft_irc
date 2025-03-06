@@ -26,6 +26,9 @@ class Server {
 		ChannelManager 					_channelManager;
 		bool 							_running;
 	
+	// MODE flags and func
+		std::vector<Client*> 			_invitedClients;
+
 	//Setup methods
 		void createSock();
 		void setupAddr();
@@ -49,7 +52,14 @@ class Server {
 	    void sendReplay(int fd, const std::string& response) const;
 		Client* findClientByNickname(const std::string& nickname);
 
-	// Command hemdlers
+	// Searsh funcs
+		Client* searchForUser(std::string nickname);
+
+	// 
+
+		void	addInvitedOnly(Client* invitedClient);
+
+	// Command handlers
 		void handlePass(Client* client, const std::vector<std::string>& params);
 		void handleNick(Client* client, const std::vector<std::string>& params);
 	    void handleUser(Client* client, const std::vector<std::string>& params);
@@ -58,8 +68,8 @@ class Server {
 	    void handlePrivmsg(Client* client, const std::vector<std::string>& params);
 	    void handleTopic(Client* client, const std::vector<std::string>& params);
 	    void handleKick(Client* client, const std::vector<std::string>& params);
+	    void handleInvite(Client* client, const std::vector<std::string>& params);
 	    // void handleMode(Client* client, const std::vector<std::string>& params);
-	    // void handleInvite(Client* client, const std::vector<std::string>& params);
 	    // void handleQuit(Client* client, const std::vector<std::string>& params);
 
 	// Prevent copying

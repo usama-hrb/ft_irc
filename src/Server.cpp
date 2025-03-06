@@ -107,6 +107,7 @@ void Server::processCommand(Client* client, const std::string& command) {
 	else if (cmd == "LIST" || cmd == "list") handleList(client, params);
 	else if (cmd == "KICK" || cmd == "kick") handleKick(client, params);
 	else if (cmd == "TOPIC" || cmd == "topic") handleTopic(client, params);
+	else if (cmd == "INVITE" || cmd == "invite") handleInvite(client, params);
 	else if (cmd == "PRIVMSG" || cmd == "privmsg") handlePrivmsg(client, params);
 	else if (cmd != "PONG" && cmd != "PING") {
 		response = ERR_UNKNOWNCOMMAND(cmd);
@@ -190,6 +191,25 @@ void Server::run() {
 	}
 }
 
+Client* Server::searchForUser(std::string nickname)
+{
+    for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
+        if (it->second && it->second->getNickName() == nickname) {
+            return it->second;
+        }
+    }
+    return NULL;
+}
+
+void	Server::addInvitedOnly(Client* invitedClient)
+{
+	for (int i = 0; i < _invitedClients.size(); i++)
+	{
+		if (_invitedClients[i] == invitedClient)
+			return ;
+	}
+	_invitedClients.push_back(invitedClient);
+}
 
 
 
