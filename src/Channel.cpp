@@ -4,7 +4,7 @@
 #include "../inc/Client.hpp"
 #include <algorithm>
 
-Channel::Channel(std::string new_name) : name(new_name), _topic("") {}
+Channel::Channel(std::string new_name) : name(new_name), _topic("No topic is set") {}
 
 size_t Channel::getMemrbersNum() {return members.size();}
 

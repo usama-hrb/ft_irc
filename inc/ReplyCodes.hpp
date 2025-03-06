@@ -18,6 +18,7 @@
 #define ERR_UNKNOWNCOMMAND(command) ":FT_irc 421 " + command + " :Unknown command" + POSTFIX
 
 // New Codes for Channels
+#define RPL_TOPIC(topic, nick, channelName) ":FT_irc 332 " + std::string(nick) + " " + std::string(channelName) + " :" + std::string(topic) + "\r\n"
 #define RPL_NOTOPIC(nickname, channel) ":FT_irc 331 " + nickname + " " + channel + " :No topic is set" + POSTFIX
 #define RPL_NAMREPLY(nickname, channel, names) ":FT_irc 353 " + nickname + " = " + channel + " :" + names + POSTFIX
 #define RPL_ENDOFNAMES(nickname, channel) ":FT_irc 366 " + nickname + " " + channel + " :End of /NAMES list" + POSTFIX
@@ -26,8 +27,8 @@
 #define ERR_NOTONCHANNEL(channel) ":FT_irc 442 " + channel + " :You're not on that channel" + POSTFIX
 #define ERR_NOSUCHNICK(nickname) ":FT_irc 401 " + nickname + " :No such nick/channel" + POSTFIX
 #define RPL_LISTEND(none) ":FT_irc 323 " + none + " :END of list" + POSTFIX
-#define RPL_TOPIC(channel, topic) ":FT_irc 332 " + channel + " :" + topic + POSTFIX
 #define ERR_CHANOPRIVSNEEDED(channel) ":FT_irc 482 " + channel + " :You're not channel operator" + POSTFIX
+#define RPL_JOIN(nick, username, channelname, ipaddress)                  std::string(":") + std::string(nick) + "!~" + std::string(username) + "@" + std::string(ipaddress) + " JOIN " + std::string(channelname) + "\r\n"
 
 
 #define SERV() "\n\

@@ -109,7 +109,6 @@ void Server::processCommand(Client* client, const std::string& command) {
 	else if (cmd == "TOPIC" || cmd == "topic") handleTopic(client, params);
 	else if (cmd == "PRIVMSG" || cmd == "privmsg") handlePrivmsg(client, params);
 	else if (cmd != "PONG" && cmd != "PING") {
-		std::cout << " this is it ---> < "  << cmd << " >" << std::endl;
 		response = ERR_UNKNOWNCOMMAND(cmd);
 		sendReplay(client->getFd(), response);
 	}

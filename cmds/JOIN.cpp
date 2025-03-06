@@ -61,9 +61,9 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
 		// }
 		channel->addMember(client);
 
-		std::string joinMsg = ":" + client->getNickName() + " JOIN :" + channelName + "\r\n";
-		sendReplay(client->getFd(), joinMsg);
-		channel->broadcast(joinMsg, client->getNickName());
+		// std::string joinMsg = ":" + client->getNickName() + " JOIN :" + channelName + "\r\n";
+		sendReplay(client->getFd(), RPL_JOIN(client->getNickName(), client->getUserName(), channelName, client->getClientIp()));
+		channel->broadcast(RPL_JOIN(client->getNickName(), client->getUserName(), channelName, client->getClientIp()), client->getNickName());
 
 		std::vector<std::string> names = channel->getMemberNames();
         std::string namesStr;
@@ -71,11 +71,7 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
             if (!namesStr.empty()) namesStr += " ";
             namesStr += names[j];
         }
-		if (channel->getTopic().empty()) {
-			sendReplay(client->getFd(), RPL_NOTOPIC(client->getNickName(), channelName));
-		} else {
-			sendReplay(client->getFd(), RPL_TOPIC(channelName, channel->getTopic()));
-		}
+		sendReplay(client->getFd(), RPL_TOPIC(channel->getTopic(),client->getNickName(), channelName));
         sendReplay(client->getFd(), RPL_NAMREPLY(client->getNickName(), channelName, namesStr));
         sendReplay(client->getFd(), RPL_ENDOFNAMES(client->getNickName(), channelName));
 	}
