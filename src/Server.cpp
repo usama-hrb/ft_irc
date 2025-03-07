@@ -65,6 +65,8 @@ void Server::handleClientData(int clientFd) {
 	            handleQuit(client, std::vector<std::string>(0));
 	        }
             return;
+        } else if (errno == EAGAIN || errno == EWOULDBLOCK) {
+            return;
         } 
         else {
 			Client* client = _clients[clientFd];
