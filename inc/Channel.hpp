@@ -13,6 +13,9 @@ private:
     std::string _topic;
 
 public:
+	
+	bool checkEmptyOp();
+	void setFirtOp();
     void setTopic(const std::string &newTopic);
     std::string getTopic() const;
     size_t getMemrbersNum();

@@ -6,6 +6,21 @@
 
 Channel::Channel(std::string new_name) : name(new_name), _topic("No topic is set") {}
 
+bool Channel::checkEmptyOp() {
+	if (operators.size() < 2)
+		return true;
+	else return false;
+}
+
+void Channel::setFirtOp() {
+	std::string name;
+	if (operators.empty() && !members.empty()) {
+		operators.push_back(members[0]);
+		name = "@" + operators[0]->getNickName();
+		operators[0]->setNickName(name);
+	}
+}
+
 void Channel::removeClient(Client* client) {
     members.erase(std::remove(members.begin(), members.end(), client), members.end());
     operators.erase(std::remove(operators.begin(), operators.end(), client), operators.end());

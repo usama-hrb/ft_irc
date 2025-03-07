@@ -33,6 +33,7 @@
 #define RPL_INVITING(inviting, invited, channel)                std::string(":") + PREFIX + " 341 " + std::string(inviting) + " " + std::string(invited) + " " + std::string(channel) + "\r\n"
 #define RPL_INVITED(nick, invited, channel)                     std::string(":") + std::string(nick) + "!~" + PREFIX + " INVITE " + std::string(invited) + " :" + std::string(channel) + "\r\n"
 #define RPL_QUIT(nickname, message) ":" + nickname + " QUIT : " + message + "\r\n"
+#define RPL_OPERATOR(nickname) ":" + nickname + " IS OPERATOR" "\r\n"
 
 #define SERV() "\n\
 ░██████╗███████╗██████╗░██╗░░░██╗███████╗██████╗░\n\

@@ -105,16 +105,16 @@ void Server::processCommand(Client* client, const std::string& command) {
 		params.push_back(param);
 	// std::cout << "==> " << cmd << std::endl;
 	// std::cout << GRE << "done" << END << std::endl;
-	if (cmd == "PASS" || cmd == "pass") handlePass(client, params);
-	else if (cmd == "NICK" || cmd == "nick") handleNick(client, params);
-	else if (cmd == "USER" || cmd == "user") handleUser(client, params);
-	else if (cmd == "JOIN" || cmd == "join") handleJoin(client, params);
-	else if (cmd == "LIST" || cmd == "list") handleList(client, params);
-	else if (cmd == "KICK" || cmd == "kick") handleKick(client, params);
-	else if (cmd == "TOPIC" || cmd == "topic") handleTopic(client, params);
-	else if (cmd == "INVITE" || cmd == "invite") handleInvite(client, params);
-	else if (cmd == "PRIVMSG" || cmd == "privmsg") handlePrivmsg(client, params);
-	else if (cmd == "QUIT" || cmd == "quit") handleQuit(client, params);
+	if (cmd == "PASS") handlePass(client, params);
+	else if (cmd == "NICK") handleNick(client, params);
+	else if (cmd == "USER") handleUser(client, params);
+	else if (cmd == "JOIN") handleJoin(client, params);
+	else if (cmd == "LIST") handleList(client, params);
+	else if (cmd == "KICK") handleKick(client, params);
+	else if (cmd == "TOPIC") handleTopic(client, params);
+	else if (cmd == "INVITE") handleInvite(client, params);
+	else if (cmd == "PRIVMSG") handlePrivmsg(client, params);
+	else if (cmd == "QUIT") handleQuit(client, params);
 	else if (cmd != "PONG" && cmd != "PING") {
 		response = ERR_UNKNOWNCOMMAND(cmd);
 		sendReplay(client->getFd(), response);
