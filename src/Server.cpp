@@ -53,26 +53,7 @@ void Server::handleNewConnection() {
 	std::cout << BLU << "New client connected with fd: " << clientFd << END << std::endl;
 }
 
-	//  char buffer[1024];
-    // ssize_t bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
 
-    // if (bytesRead <= 0) {
-    //     if (bytesRead == 0) {
-    //         std::cout << "Client with fd: " << clientFd << " disconnected" << std::endl;
-    //     } else if (errno == ECONNRESET || errno == EPIPE) {
-    //         std::cerr << "Client with fd: " << clientFd << " forcibly disconnected" << std::endl;
-    //     } else {
-    //         std::cerr << "recv error: " << strerror(errno) << std::endl;
-    //     }
-
-    //     // Call handleQuit() to clean up properly
-    //     Client* client = _clients[clientFd];
-    //     if (client) {
-    //         handleQuit(client, std::vector<std::string>(0));
-    //     }
-
-    //     return;
-    // }
 void Server::handleClientData(int clientFd) {
     char buffer[1024];
     ssize_t bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
@@ -83,9 +64,6 @@ void Server::handleClientData(int clientFd) {
 	        if (client) {
 	            handleQuit(client, std::vector<std::string>(0));
 	        }
-            return;
-        } 
-        else if (errno == EAGAIN || errno == EWOULDBLOCK) {
             return;
         } 
         else {
@@ -113,7 +91,6 @@ void Server::handleClientData(int clientFd) {
 		usleep(100);
     }
 }
-
 
 void Server::processCommand(Client* client, const std::string& command) {
 	std::istringstream iss(command);
@@ -179,43 +156,6 @@ void Server::closeClient(int clientFd) {
     close(clientFd);
 }
 
-
-
-// void Server::closeClient(int clientFd) {
-//     // Find the client
-//     std::map<int, Client*>::iterator it = _clients.find(clientFd);
-//     Client* client = (it != _clients.end()) ? it->second : NULL;
-
-//     if (client) {
-//         // Remove client from all channels
-//         std::vector<std::string> channelsToRemove;
-//         for (std::vector<Channel*>::iterator chanIt = _channelManager.Channels.begin(); chanIt != _channelManager.Channels.end(); ++chanIt) {
-//             (*chanIt)->removeClient(client);
-//             if ((*chanIt)->isEmpty()) {
-//                 channelsToRemove.push_back((*chanIt)->getName());
-//             }
-//         }
-//         // Remove empty channels after iteration to avoid iterator invalidation
-//         for (std::vector<std::string>::iterator nameIt = channelsToRemove.begin(); nameIt != channelsToRemove.end(); ++nameIt) {
-//             _channelManager.removeChannel(*nameIt);
-//         }
-//     }
-//     // Remove from pollfds
-//     for (std::vector<pollfd>::iterator pollIt = _pollFds.begin(); pollIt != _pollFds.end(); ++pollIt) {
-//         if (pollIt->fd == clientFd) {
-//             _pollFds.erase(pollIt);
-//             break;
-//         }
-//     }
-//     // Delete client and remove from map
-//     if (client) {
-//         delete client;
-//         _clients.erase(clientFd);
-//     }
-
-//     close(clientFd);
-// }
-
 Server::Server(int port, const std::string &password) : _port(port), _password(password), _serverFd(-1), _running(false) {
 	createSock();
 	setupAddr();
@@ -267,7 +207,7 @@ void Server::run() {
 			 	handleClientData(_pollFds[i].fd);
 		}
 	}
-	_running = false; ///check it 
+	_running = false;
 }
 
 Client* Server::searchForUser(std::string nickname)
