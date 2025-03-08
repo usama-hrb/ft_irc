@@ -43,12 +43,9 @@ void	Server::handleInvite(Client* client, const std::vector<std::string>& params
 		sendReplay(client->getFd(), ERR_USERONCHANNEL(client->getNickName(), invitedClient->getNickName(), channelName));
 		return ;
 	}
-	std::string invitMSG = client->getNickName() + " INVITE " + invitedClient->getNickName() + " to " + channelName + reason;
-
-	channel->addMember(invitedClient);
 
 	sendReplay(client->getFd(), RPL_INVITING(client->getNickName(), nickName, channelName)); //RPL_INVITED(nickName, invitedClient, channelName)
-	sendReplay(invitedClient->getFd(), RPL_INVITED(client->getNickName(), nickName, channelName));
+	sendReplay(invitedClient->getFd(), RPL_INVITED(client->getNickName(), nickName, channelName, client->getClientInfo()));
 
-	addInvitedOnly(invitedClient);
+	channel->addInvitedOnly(invitedClient);
 }

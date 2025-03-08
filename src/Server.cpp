@@ -114,6 +114,7 @@ void Server::processCommand(Client* client, const std::string& command) {
 	else if (cmd == "TOPIC") handleTopic(client, params);
 	else if (cmd == "INVITE") handleInvite(client, params);
 	else if (cmd == "PRIVMSG") handlePrivmsg(client, params);
+	else if (cmd == "MODE") handleMode(client, params);
 	else if (cmd == "QUIT") handleQuit(client, params);
 	else if (cmd != "PONG" && cmd != "PING") {
 		response = ERR_UNKNOWNCOMMAND(cmd);
@@ -222,12 +223,3 @@ Client* Server::searchForUser(std::string nickname)
     return NULL;
 }
 
-void	Server::addInvitedOnly(Client* invitedClient)
-{
-	for (size_t i = 0; i < _invitedClients.size(); i++)
-	{
-		if (_invitedClients[i] == invitedClient)
-			return ;
-	}
-	_invitedClients.push_back(invitedClient);
-}

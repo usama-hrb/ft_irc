@@ -11,12 +11,21 @@ private:
     std::vector<Client*> members;
     std::vector<Client*> operators;
     std::string _topic;
+	// modes
+	int inviteOnly;
+	int  limit;
 
 public:
-	
+	std::vector<Client*> 			_invitedClients;
+	bool isInviteOnly(std::string nickName);
 	bool checkEmptyOp();
 	void setFirtOp();
+	void setInviteOnly(int flag);
+	int getInviteOnly();
+	void setLimit(int limit);
+	int  getLimit();
     void setTopic(const std::string &newTopic);
+	void	addInvitedOnly(Client* invitedClient);
     std::string getTopic() const;
     size_t getMemrbersNum();
     Channel(std::string new_name);

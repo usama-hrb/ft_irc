@@ -35,6 +35,22 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
 			continue;
 		}
 		Channel* channel = _channelManager.search_for_channel(channelName);
+		if (channel && channel->getInviteOnly() == 1)
+		{
+			if (!channel->isInviteOnly(client->getNickName()))
+			{
+				sendReplay(client->getFd(), ERR_INVITEONLYCHAN(client->getNickName(),channelName));
+				continue;
+			}
+		}
+		if (channel && channel->getLimit() != 0)
+		{
+			if (channel->getMemrbersNum() == (size_t)channel->getLimit())
+			{
+				sendReplay(client->getFd(), ERR_CHANNELISFULL(client->getNickName(),channelName));
+				continue;
+			}
+		}
 		int hasChannel = 0;
 		if (!channel)
 		{
@@ -61,7 +77,6 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
 		// }
 		channel->addMember(client);
 
-		// std::string joinMsg = ":" + client->getNickName() + " JOIN :" + channelName + "\r\n";
 		sendReplay(client->getFd(), RPL_JOIN(client->getNickName(), client->getUserName(), channelName, client->getClientIp()));
 		channel->broadcast(RPL_JOIN(client->getNickName(), client->getUserName(), channelName, client->getClientIp()), client->getNickName());
 

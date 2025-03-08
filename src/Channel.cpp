@@ -4,7 +4,7 @@
 #include "../inc/Client.hpp"
 #include <algorithm>
 
-Channel::Channel(std::string new_name) : name(new_name), _topic("No topic is set") {}
+Channel::Channel(std::string new_name) : name(new_name), _topic("No topic is set"), inviteOnly(0), limit(0) {}
 
 bool Channel::checkEmptyOp() {
 	if (operators.size() < 2)
@@ -21,11 +21,53 @@ void Channel::setFirtOp() {
 	}
 }
 
-void Channel::removeClient(Client* client) {
-    members.erase(std::remove(members.begin(), members.end(), client), members.end());
-    operators.erase(std::remove(operators.begin(), operators.end(), client), operators.end());
+void Channel::setInviteOnly(int flag){
+	inviteOnly = flag;
 }
 
+int Channel::getInviteOnly(){return inviteOnly;}
+
+void Channel::setLimit(int limit){
+	this->limit = limit;
+}
+
+int Channel::getLimit(){return limit;}
+
+bool Channel::isInviteOnly(std::string nickName)
+{
+	for(size_t i = 0; i < _invitedClients.size(); i++)
+	{
+		if (_invitedClients[i]->getNickName() == nickName)
+			return true;
+	}
+	return false;
+}
+
+void	Channel::addInvitedOnly(Client* invitedClient)
+{
+	for (size_t i = 0; i < _invitedClients.size(); i++)
+	{
+		if (_invitedClients[i] == invitedClient)
+			return ;
+	}
+	_invitedClients.push_back(invitedClient);
+}
+
+void Channel::removeClient(Client* client) {
+    bool wasOp = isOperator(client);
+
+    members.erase(std::remove(members.begin(), members.end(), client), members.end());
+    operators.erase(std::remove(operators.begin(), operators.end(), client), operators.end());
+
+    if (wasOp && operators.empty() && !members.empty()) {
+        Client* newOp = members.front();
+        addOperator(newOp);
+
+        // Send MODE command to set the new operator
+        std::string modeMsg = ":FT_irc MODE " + getName() + " +o " + newOp->getNickName() + "\r\n";
+        broadcast(modeMsg, "");
+    }
+}
 size_t Channel::getMemrbersNum() {return members.size();}
 
 void Channel::setTopic(const std::string &newTopic) {

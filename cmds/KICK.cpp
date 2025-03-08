@@ -51,6 +51,7 @@ void Server::handleKick(Client* client, const std::vector<std::string>& params)
     // Broadcast the kick message to all channel members
     channel->broadcast(kickMsg, "");
 
+
     std::vector<std::string> names = channel->getMemberNames();
     std::string namesStr;
     for (size_t i = 0; i < names.size(); i++)

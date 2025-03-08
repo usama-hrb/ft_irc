@@ -4,6 +4,8 @@
 #include "Client.hpp"
 #include "ReplyCodes.hpp"
 #include "Channel.hpp"
+#include <cstdlib>
+
 // #include ""
 
 class Server {
@@ -25,8 +27,6 @@ class Server {
 		ChannelManager 					_channelManager;
 		bool 							_running;
 	
-	// MODE flags and func
-		std::vector<Client*> 			_invitedClients;
 
 	//Setup methods
 		void createSock();
@@ -56,7 +56,6 @@ class Server {
 
 	// 
 
-		void	addInvitedOnly(Client* invitedClient);
 
 	// Command handlers
 		void handlePass(Client* client, const std::vector<std::string>& params);
@@ -69,5 +68,5 @@ class Server {
 	    void handleKick(Client* client, const std::vector<std::string>& params);
 	    void handleInvite(Client* client, const std::vector<std::string>& params);
 	    void handleQuit(Client* client, const std::vector<std::string>& params);
-	    // void handleMode(Client* client, const std::vector<std::string>& params);
+	    void handleMode(Client* client, const std::vector<std::string>& params);
 };

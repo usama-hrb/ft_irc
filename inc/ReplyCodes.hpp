@@ -17,6 +17,9 @@
 #define ERR_NICKNAMEINUSE(nickname, nick) PREFIX " 433 " + nickname + " " + nick + " :Nickname is already in use" + POSTFIX
 #define ERR_UNKNOWNCOMMAND(command) PREFIX " 421 " + command + " :Unknown command" + POSTFIX
 #define ERR_USERONCHANNEL(nickName ,invitedUser, channelName)  PREFIX " 443 " + nickName + invitedUser + channelName + " :User is already on channel" + POSTFIX
+#define ERR_INVITEONLYCHAN(nick, channel)                       std::string(":") + PREFIX + " 473 " + std::string(nick) + " " + std::string(channel) + " :Cannot join channel (+i)\r\n"
+#define ERR_CHANNELISFULL(nick, channelName)                    std::string(":") + PREFIX + " 471 " + std::string(nick) + " " + std::string(channelName) + " :Cannot join channel (+l) - channel is full\r\n"
+#define ERR_NOCHANMODES(nickname, channel) "477 " + nickname + " " + channel + " :Channel doesn't support modes"
 
 // New Codes for Channels
 #define RPL_TOPIC(topic, nick, channelName) PREFIX " 332 " + std::string(nick) + " " + std::string(channelName) + " :" + std::string(topic) + "\r\n"
@@ -31,7 +34,7 @@
 #define ERR_CHANOPRIVSNEEDED(channel) PREFIX " 482 " + channel + " :You're not channel operator" + POSTFIX
 #define RPL_JOIN(nick, username, channelname, ipaddress)                  std::string(":") + std::string(nick) + "!~" + std::string(username) + "@" + std::string(ipaddress) + " JOIN " + std::string(channelname) + "\r\n"
 #define RPL_INVITING(inviting, invited, channel)                std::string(":") + PREFIX + " 341 " + std::string(inviting) + " " + std::string(invited) + " " + std::string(channel) + "\r\n"
-#define RPL_INVITED(nick, invited, channel)                     std::string(":") + std::string(nick) + "!~" + PREFIX + " INVITE " + std::string(invited) + " :" + std::string(channel) + "\r\n"
+#define RPL_INVITED(nick, invited, channel, info)                     std::string(":") + info + " INVITE " + std::string(invited) + " :" + std::string(channel) + "\r\n"
 #define RPL_QUIT(nickname, message) ":" + nickname + " QUIT : " + message + "\r\n"
 #define RPL_OPERATOR(nickname) ":" + nickname + " IS OPERATOR" "\r\n"
 
