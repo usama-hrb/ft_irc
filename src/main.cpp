@@ -35,13 +35,18 @@ int checkPassword(std::string password) {
     return 0;
 }
 
+void f() {
+	system("leaks ircserv");
+	system("lsof -c ircserv");
+}
+
 
 int main(int ac, char** av) {
     if (ac != 3) {
         std::cerr << "Usage: " << av[0] << " <port> <password>" << std::endl;
         return 1;
     }
-
+	atexit(f);
     try {
         signal(SIGPIPE, SIG_IGN);
         signal(SIGINT, handleShutdown);

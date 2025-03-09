@@ -127,8 +127,6 @@ void Server::closeClient(int clientFd) {
     if (it == _clients.end()) return;
 
     Client* client = it->second;
-    
-    // Remove client from all channels
     std::vector<std::string> channelsToRemove;
     for (std::vector<Channel*>::iterator chanIt = _channelManager.Channels.begin(); chanIt != _channelManager.Channels.end(); ++chanIt) {
         if ((*chanIt)->isMember(client)) {
@@ -138,21 +136,15 @@ void Server::closeClient(int clientFd) {
             }
         }
     }
-
-    // Delete empty channels
     for (size_t i = 0; i < channelsToRemove.size(); ++i) {
         _channelManager.removeChannel(channelsToRemove[i]);
     }
-
-    // Remove from pollfds
     for (std::vector<pollfd>::iterator pollIt = _pollFds.begin(); pollIt != _pollFds.end(); ++pollIt) {
         if (pollIt->fd == clientFd) {
             _pollFds.erase(pollIt);
             break;
         }
     }
-
-    // Remove from client map
     delete client;
     _clients.erase(clientFd);
 

@@ -10,7 +10,7 @@ void Server::handleQuit(Client* client, const std::vector<std::string>& params) 
             (*it)->broadcast(RPL_QUIT(client->getNickName(), quitMessage), quitMessage), client->getNickName();
 			if ((*it)->isOperator(client))
 				(*it)->setFirtOp();
-            (*it)->removeClient(client);
+			
         }
     }
     std::cout << RED << "Client with fd : " << client->getFd() << " disconnected" << END << std::endl;

@@ -19,7 +19,10 @@
 #define ERR_USERONCHANNEL(nickName ,invitedUser, channelName)  PREFIX " 443 " + nickName + invitedUser + channelName + " :User is already on channel" + POSTFIX
 #define ERR_INVITEONLYCHAN(nick, channel)                       std::string(":") + PREFIX + " 473 " + std::string(nick) + " " + std::string(channel) + " :Cannot join channel (+i)\r\n"
 #define ERR_CHANNELISFULL(nick, channelName)                    std::string(":") + PREFIX + " 471 " + std::string(nick) + " " + std::string(channelName) + " :Cannot join channel (+l) - channel is full\r\n"
-#define ERR_NOCHANMODES(nickname, channel) "477 " + nickname + " " + channel + " :Channel doesn't support modes"
+#define ERR_NOCHANMODES(nickname, channel) 						std::string(":") + PREFIX + " 477 " + std::string(nickname) + " " + std::string(channel) + " :Channel doesn't support modes\r\n"
+#define ERR_BADCHANNELKEY(nick, channelName)                    std::string(":") + PREFIX + " 475 " + std::string(nick) + " " + std::string(channelName) + " :Cannot join channel (+k) - bad key\r\n"
+#define ERR_INVALIDMODEPARAM(nickname, channel, param) ":FT_irc 696 " + nickname + " " + channel + " " + param + " :Invalid mode parameter" + POSTFIX
+#define RPL_CHANNELMODEIS(nickname, channel, mode, params) ":FT_irc 324 " + nickname + " " + channel + " " + mode + " " + params + POSTFIX
 
 // New Codes for Channels
 #define RPL_TOPIC(topic, nick, channelName) PREFIX " 332 " + std::string(nick) + " " + std::string(channelName) + " :" + std::string(topic) + "\r\n"

@@ -4,7 +4,14 @@
 #include "../inc/Client.hpp"
 #include <algorithm>
 
-Channel::Channel(std::string new_name) : name(new_name), _topic("No topic is set"), inviteOnly(0), limit(0) {}
+Channel::Channel(std::string new_name) : name(new_name), password(""), _topic("No topic is set"), inviteOnly(0), limit(0) {}
+
+ChannelManager::~ChannelManager() {
+	for (size_t i = 0; i < Channels.size(); ++i) {
+        delete Channels[i];
+    }
+    Channels.clear();
+}
 
 bool Channel::checkEmptyOp() {
 	if (operators.size() < 2)
@@ -143,6 +150,12 @@ void Channel::broadcast(const std::string &msg, std::string senderNick){
         if (members[i]->getNickName() != senderNick) {
             send(members[i]->getFd(), msg.c_str(), msg.size(), 0);
         }
+    }
+}
+
+void Channel::modeBroadcast(const std::string &msg){
+    for (size_t i = 0; i < members.size(); ++i) {
+        send(members[i]->getFd(), msg.c_str(), msg.size(), 0);
     }
 }
 

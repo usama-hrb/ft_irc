@@ -40,12 +40,14 @@ public:
 	bool isEmpty();
     bool removeMember(std::string nickname, std::string msg);
     void broadcast(const std::string &msg, std::string senderNick);
+	void modeBroadcast(const std::string &msg);
     std::vector<std::string> getMemberNames();
     void removeClient(Client* client);
 };
 
 class ChannelManager {
 public:
+	~ChannelManager();
     std::vector<Channel*> Channels;
     Channel*	search_for_channel(std::string channel_name);
     Channel*	CreatChannel(std::string channel_name);

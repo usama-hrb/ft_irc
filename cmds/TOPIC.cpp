@@ -47,9 +47,9 @@ void Server::handleTopic(Client* client, const std::vector<std::string>& params)
 			newTopic += *it + " ";
         channel->setTopic(newTopic);
 
-        std::string topicMsg = ":" + client->getNickName() + " TOPIC " + channelName + " :" + newTopic + "\r\n";
         if (newTopic[0] == ':')
             newTopic = newTopic.substr(1);
+        std::string topicMsg = ":" + client->getNickName() + " TOPIC " + channelName + " :" + newTopic + "\r\n";
         channel->broadcast(topicMsg, "");
     }
 }
