@@ -73,17 +73,6 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
 			}
 			channel->addOperator(client);
 		}
-		
-		// std::string walo = "---------------> : " + password + "\n";
-		// sendReplay(client->getFd(), walo);
-		// std::cout << "+++++++++++++ " << channel->getPassword();
-		// std::cout << "------------- " << password; 
-		// if (channel->getPassword() != password && !hasChannel)
-		// {
-		// 	// std::cout << "++++++ in +++++++\n";
-		// 	std::string msg = "ERR_PASSWORD\n"; //
-		// 	sendReplay(client->getFd(), msg);
-		// }
 		channel->addMember(client);
 
 		sendReplay(client->getFd(), RPL_JOIN(client->getNickName(), client->getUserName(), channelName, client->getClientIp()));

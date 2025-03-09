@@ -40,7 +40,10 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 			if (sign == '+')
 			{
 				if (params.size() < 3)
+				{
 					sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("MODE")));
+					return;
+				}
 				channel->setTopic(params[2]);
 			}
 			else
@@ -51,7 +54,10 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 			if (sign == '+')
 			{
 				if (params.size() < 3)
+				{
 					sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("MODE")));
+					return;
+				}
 				channel->setPassword(params[2]);
 			}
 			else
@@ -59,13 +65,48 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 		}
 		else if (params[1][1] == 'o')
 		{
+			if (params.size() < 3)
+			{
+				sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("MODE")));
+				return;
+			}
+			Client* mem = searchForUser(params[2]);
+			if (sign == '+')
+			{
+
+				if (!channel->isMember(mem))
+				{
+					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2]));
+					return ;
+				}
+				if (channel->isOperator(mem))
+				{
+					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2]));
+					return ;
+				}
+				channel->addOp(mem->getNickName());
+			}
+			else 
+			{
+				if (!channel->isOperator(mem))
+				{
+					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2]));
+					return ;
+				}
+				channel->removeOp(mem->getNickName());
+				channel->print_Op();
+			}
+
 		}
 		else if (params[1][1] == 'l')
 		{
 			if (sign == '+')
 			{
 				if (params[2].empty())
+				{
 					sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("MODE")));
+					return ;
+				}
 				int lim = 0;
 				std::stringstream iss(params[2]);
 
@@ -93,13 +134,10 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 		sendReplay(client->getFd(), ERR_NOCHANMODES(client->getNickName(), channelName));
 		return ;
 	}
-	char currentSign = params[1][0];
-	std::string sign_mode = params[1];
 	std::string param = "";
-	if (param.size() >= 3)
-		std::string param = params[2];
-	char mode = params[1][1];
-	std::string msg = ":" + client->getNickName() + " MODE " + channelName + " " + currentSign + mode + "\r\n";
-	channel->modeBroadcast(msg);
-	// sendReplay(client->getFd(), RPL_CHANNELMODEIS(client->getNickName(), channelName, sign_mode, param));
+
+	if (params.size() > 2)
+		channel->modeBroadcast(RPL_CHANGEMODE(channelName, params[1], params[2]));
+	else
+	 	channel->modeBroadcast(RPL_CHANGEMODE(channelName, params[1], param));
 }

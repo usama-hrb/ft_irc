@@ -28,6 +28,24 @@ void Channel::setFirtOp() {
 	}
 }
 
+void Channel::addOp(std::string newOp) {
+	std::string name;
+	Client* client = searchForMember(newOp);
+	name = client->getNickName();
+	client->setNickName(name);
+	operators.push_back(client);
+}
+
+
+Client* Channel::searchForMember(std::string nickname) {
+	for (size_t i = 0; i < members.size(); ++i) {
+        if (nickname == members[i]->getNickName()) {
+            return members[i];
+        }
+    }
+    return NULL;
+}
+
 void Channel::setInviteOnly(int flag){
 	inviteOnly = flag;
 }
@@ -143,6 +161,18 @@ bool Channel::removeMember(std::string nickname, std::string msg)
         }
     }
     return false;
+}
+
+void Channel::removeOp(std::string nickname)
+{
+    for (std::vector<Client*>::iterator it = operators.begin(); it != operators.end(); ++it) {
+        if ((*it)->getNickName() == nickname)
+		{
+			std::cout << "---------->>>>>>" << nickname << std::endl;
+            operators.erase(it);
+			return;
+		}
+    }
 }
 
 void Channel::broadcast(const std::string &msg, std::string senderNick){
