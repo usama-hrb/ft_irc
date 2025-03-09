@@ -8,6 +8,8 @@ class Client {
 	std::string _userName;
 	std::string _realName;
 	std::string _clientIp;
+	std::string _inputBuffer;
+
 	bool _hasPassword;
 	bool _hasNickName;
 	bool _hasUserName;
@@ -35,4 +37,8 @@ public:
     void setRealName(const std::string& realName);
     void setPassword(bool status);
     void setIsRegistered(bool status);
+
+	void appendToBuffer(const std::string& data);
+    std::string& getBuffer();
+    void clearBuffer(size_t pos);
 };

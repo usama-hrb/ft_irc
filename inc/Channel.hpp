@@ -61,6 +61,5 @@ public:
     Channel*	search_for_channel(std::string channel_name);
     Channel*	CreatChannel(std::string channel_name);
 	void		removeChannel(const std::string& channelName);
-    // Client *    getClientByNick(std::string nickname);
 };
 

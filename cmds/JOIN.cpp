@@ -92,13 +92,3 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
         sendReplay(client->getFd(), RPL_ENDOFNAMES(client->getNickName(), channelName));
 	}
 }
-
-void Server::handleList(Client* client, const std::vector<std::string>& params) {
-	(void)params;
-	for (size_t i = 0; i < _channelManager.Channels.size(); i++)
-	{
-		sendReplay(client->getFd(), _channelManager.Channels[i]->getName() + "\n");
-	}
-	std::string response = RPL_LISTEND(std::string(""));
-	sendReplay(client->getFd(), response);
-}

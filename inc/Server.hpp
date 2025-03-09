@@ -62,11 +62,33 @@ class Server {
 		void handleNick(Client* client, const std::vector<std::string>& params);
 	    void handleUser(Client* client, const std::vector<std::string>& params);
 		void handleJoin(Client* client, const std::vector<std::string>& params);
-		void handleList(Client* client, const std::vector<std::string>& params);
 	    void handlePrivmsg(Client* client, const std::vector<std::string>& params);
 	    void handleTopic(Client* client, const std::vector<std::string>& params);
 	    void handleKick(Client* client, const std::vector<std::string>& params);
 	    void handleInvite(Client* client, const std::vector<std::string>& params);
 	    void handleQuit(Client* client, const std::vector<std::string>& params);
 	    void handleMode(Client* client, const std::vector<std::string>& params);
+
+
+	//bot 
+		struct Challenge {
+			std::string challenger;
+			std::string target;
+			std::string challenger_choice;
+			std::string target_choice;
+			bool accepted;
+			time_t created_at;
+			std::string channel;
+		};
+
+		std::map<std::string, Challenge> active_challenges_;
+		void handleRPS(Client* client, const std::vector<std::string>& params);
+		void handleChoose(Client* client, const std::vector<std::string>& params);
+		void resolveRPS(const Challenge& challenge);
+		std::string replaceAll(std::string str, const std::string& from, const std::string& to);
+		void checkChallengeCompletion(Challenge& challenge);
+		void checkChallengeTimeouts();
+		void sendNotice(Client* client, const std::string& message);
+		void broadcastNotice(Channel* channel, const std::string& message) ;
+		void handleAccept(Client* client, const std::vector<std::string>& params);
 };

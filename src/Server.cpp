@@ -53,7 +53,6 @@ void Server::handleNewConnection() {
 	std::cout << BLU << "New client connected with fd: " << clientFd << END << std::endl;
 }
 
-
 void Server::handleClientData(int clientFd) {
     char buffer[1024];
     ssize_t bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
@@ -79,18 +78,29 @@ void Server::handleClientData(int clientFd) {
     }
 
     buffer[bytesRead] = '\0';
-    std::string message(buffer);
-	if (message.substr(0, 4) != "PONG" && message.substr(0, 4) != "PING")
-    	std::cout << "-> " << message << std::endl;
-
     Client* client = _clients[clientFd];
-    
-    std::istringstream iss(message);
-    std::string commandLine;
-    while(std::getline(iss, commandLine)) {
-        commandLine = commandLine.substr(0, commandLine.find_last_not_of("\r\n") + 1);
-        processCommand(client, commandLine);
-		usleep(100);
+	client->appendToBuffer(buffer);
+	
+	std::cout << GRA << "--> " <<  client->getBuffer().substr(0, client->getBuffer().find_last_of('\n')) << END << std::endl;
+
+    size_t pos;
+   while (true) {
+        pos = client->getBuffer().find("\r\n");
+        if (pos != std::string::npos) {
+            std::string message = client->getBuffer().substr(0, pos);
+            client->clearBuffer(pos + 2);
+            processCommand(client, message);
+            continue;
+        }
+
+        pos = client->getBuffer().find('\n');
+        if (pos != std::string::npos) {
+            std::string message = client->getBuffer().substr(0, pos);
+            client->clearBuffer(pos + 1);
+            processCommand(client, message);
+            continue;
+        }
+        break;
     }
 }
 
@@ -101,21 +111,30 @@ void Server::processCommand(Client* client, const std::string& command) {
 	std::string response;
 
 	iss >> cmd;
-	for (std::string param; iss >> param; )
+	for (std::string param; iss >> param; ) {
+		if (param[0] == ':' && param.size() > 1) {
+			std::string lastParam = param.substr(1);
+			std::string rest;
+			std::getline(iss, rest);
+			lastParam += rest;
+			params.push_back(lastParam);
+			break;
+		}
 		params.push_back(param);
-	// std::cout << "==> " << cmd << std::endl;
-	// std::cout << GRE << "done" << END << std::endl;
+	}
 	if (cmd == "PASS") handlePass(client, params);
 	else if (cmd == "NICK") handleNick(client, params);
 	else if (cmd == "USER") handleUser(client, params);
 	else if (cmd == "JOIN") handleJoin(client, params);
-	else if (cmd == "LIST") handleList(client, params);
 	else if (cmd == "KICK") handleKick(client, params);
 	else if (cmd == "TOPIC") handleTopic(client, params);
 	else if (cmd == "INVITE") handleInvite(client, params);
 	else if (cmd == "PRIVMSG") handlePrivmsg(client, params);
 	else if (cmd == "MODE") handleMode(client, params);
 	else if (cmd == "QUIT") handleQuit(client, params);
+	// else if (cmd == "RPS") handleRPS(client,params);
+	// else if (cmd == "CHOOSE") handleChoose(client, params);
+	// else if (cmd == "ACCEPT") handleAccept(client, params);
 	else if (cmd != "PONG" && cmd != "PING") {
 		response = ERR_UNKNOWNCOMMAND(cmd);
 		sendReplay(client->getFd(), response);
@@ -183,9 +202,10 @@ void Server::welcomingMessage(Client* client) const {
 
 void Server::sendReplay(int fd, const std::string& response) const {
 	std::string formatted = response;
+	if (formatted.find("\r\n") == std::string::npos)
+		formatted += "\r\n";
     send(fd, formatted.c_str(), formatted.size(), 0);
 }
-
 void Server::run() {
 	_running = true;
 	_pollFds.push_back((pollfd){_serverFd, POLLIN, 0});

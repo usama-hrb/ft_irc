@@ -18,6 +18,10 @@ std::string Client::getClientInfo() const {
 
 Client::~Client() {}
 
+void Client::appendToBuffer(const std::string& data) { _inputBuffer += data;}
+std::string& Client::getBuffer() { return _inputBuffer; }
+void Client::clearBuffer(size_t pos) { _inputBuffer.erase(0, pos);}
+
 // GETTERS
 int Client::getFd() const {return _fd;}
 std::string Client::getClientIp() const {return  _clientIp;}
