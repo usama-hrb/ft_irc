@@ -5,7 +5,7 @@
 #define POSTFIX "\r\n"
 
 // Existing Codes
-#define RPL_WELCOME(nickname) PREFIX " 001 " + nickname + " :Welcome to the Internet Relay Network " + nickname + POSTFIX
+#define RPL_WELCOME(nickname, username, ipaddress) PREFIX " 001 " + nickname + " :Welcome to the Internet Relay Network (" + nickname + "!" + username + "@" + ipaddress + ")" + POSTFIX
 #define RPL_YOURHOST(nickname) PREFIX " 002 " + nickname + " :Your host is FT_irc, running version 1.0" + POSTFIX
 #define RPL_CREATED(nickname) PREFIX " 003 " + nickname + " :This server was created " + __DATE__ + POSTFIX
 #define RPL_MYINFO(nickname) PREFIX " 004 " + nickname + " :FT_irc 1.0 - -" + POSTFIX
@@ -17,16 +17,16 @@
 #define ERR_NICKNAMEINUSE(nickname, nick) PREFIX " 433 " + nickname + " " + nick + " :Nickname is already in use" + POSTFIX
 #define ERR_UNKNOWNCOMMAND(command) PREFIX " 421 " + command + " :Unknown command" + POSTFIX
 #define ERR_USERONCHANNEL(nickName ,invitedUser, channelName)  PREFIX " 443 " + nickName + invitedUser + channelName + " :User is already on channel" + POSTFIX
-#define ERR_INVITEONLYCHAN(nick, channel)                       std::string(":") + PREFIX + " 473 " + std::string(nick) + " " + std::string(channel) + " :Cannot join channel (+i)\r\n"
-#define ERR_CHANNELISFULL(nick, channelName)                    std::string(":") + PREFIX + " 471 " + std::string(nick) + " " + std::string(channelName) + " :Cannot join channel (+l) - channel is full\r\n"
-#define ERR_NOCHANMODES(nickname, channel) 						std::string(":") + PREFIX + " 477 " + std::string(nickname) + " " + std::string(channel) + " :Channel doesn't support modes\r\n"
-#define ERR_BADCHANNELKEY(nick, channelName)                    std::string(":") + PREFIX + " 475 " + std::string(nick) + " " + std::string(channelName) + " :Cannot join channel (+k) - bad key\r\n"
-#define ERR_INVALIDMODEPARAM(nickname, channel, param) ":FT_irc 696 " + nickname + " " + channel + " " + param + " :Invalid mode parameter" + POSTFIX
-#define RPL_CHANNELMODEIS(nickname, channel, mode, params) ":FT_irc 324 " + nickname + " " + channel + " " + mode + " " + params + POSTFIX
-#define RPL_CHANGEMODE(chName, mode, arguments ) std::string(":") + PREFIX + std::string(" MODE ") + std::string(chName) + " " + std::string(mode) + " " + std::string(arguments) + "\r\n"
+#define ERR_INVITEONLYCHAN(nick, channel) PREFIX " 473 " + nick + " " + channel + " :Cannot join channel (+i)" POSTFIX
+#define ERR_CHANNELISFULL(nick, channelName) PREFIX " 471 " + nick + " " + channelName + " :Cannot join channel (+l) - channel is full" + POSTFIX
+#define ERR_NOCHANMODES(nickname, channel) PREFIX " 477 " + nickname + " " + channel + " :Channel doesn't support modes" + POSTFIX
+#define ERR_BADCHANNELKEY(nick, channelName) PREFIX " 475 " + nick + " " + channelName + " :Cannot join channel (+k) - bad key" + POSTFIX
+#define ERR_INVALIDMODEPARAM(nickname, channel, param) PREFIX " 696 " + nickname + " " + channel + " " + param + " :Invalid mode parameter" + POSTFIX
+#define RPL_CHANNELMODEIS(nickname, channel, mode, params) PREFIX " 324 " + nickname + " " + channel + " " + mode + " " + params + POSTFIX
+#define RPL_CHANGEMODE(chName, mode, arguments ) PREFIX " MODE " + chName + " " + mode + " " + arguments + POSTFIX
 
 // New Codes for Channels
-#define RPL_TOPIC(topic, nick, channelName) PREFIX " 332 " + std::string(nick) + " " + std::string(channelName) + " :" + std::string(topic) + "\r\n"
+#define RPL_TOPIC(topic, nick, channelName) PREFIX " 332 " + nick + " " + channelName + " :" + topic + POSTFIX
 #define RPL_NOTOPIC(nickname, channel) PREFIX " 331 " + nickname + " " + channel + " :No topic is set" + POSTFIX
 #define RPL_NAMREPLY(nickname, channel, names) PREFIX " 353 " + nickname + " = " + channel + " :" + names + POSTFIX
 #define RPL_ENDOFNAMES(nickname, channel) PREFIX " 366 " + nickname + " " + channel + " :End of /NAMES list" + POSTFIX
@@ -36,9 +36,9 @@
 #define ERR_NOSUCHNICK(nickname) PREFIX " 401 " + nickname + " :No such nick/channel" + POSTFIX
 #define RPL_LISTEND(none) PREFIX " 323 " + none + " :END of list" + POSTFIX
 #define ERR_CHANOPRIVSNEEDED(channel) PREFIX " 482 " + channel + " :You're not channel operator" + POSTFIX
-#define RPL_JOIN(nick, username, channelname, ipaddress)                  std::string(":") + std::string(nick) + "!~" + std::string(username) + "@" + std::string(ipaddress) + " JOIN " + std::string(channelname) + "\r\n"
-#define RPL_INVITING(inviting, invited, channel)                std::string(":") + PREFIX + " 341 " + std::string(inviting) + " " + std::string(invited) + " " + std::string(channel) + "\r\n"
-#define RPL_INVITED(nick, invited, channel, info)                     std::string(":") + info + " INVITE " + std::string(invited) + " :" + std::string(channel) + "\r\n"
+#define RPL_JOIN(nick, username, channelname, ipaddress) ":" + nick + "!" + username + "@" + ipaddress + " JOIN " + channelname + POSTFIX
+#define RPL_INVITING(inviting, invited, channel) PREFIX " 341 " + inviting + " " + invited + " " + channel + POSTFIX
+#define RPL_INVITED(nick, invited, channel, info)   ":" + info + " INVITE " + invited + " :" + channel + POSTFIX
 #define RPL_QUIT(nickname, message) ":" + nickname + " QUIT : " + message + "\r\n"
 #define RPL_OPERATOR(nickname) ":" + nickname + " IS OPERATOR" "\r\n"
 

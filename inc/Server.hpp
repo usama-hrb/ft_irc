@@ -6,7 +6,6 @@
 #include "Channel.hpp"
 #include <cstdlib>
 
-// #include ""
 
 class Server {
 	public:

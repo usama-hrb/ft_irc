@@ -52,7 +52,7 @@ void Channel::setInviteOnly(int flag){
 
 int Channel::getInviteOnly(){return inviteOnly;}
 
-void Channel::setLimit(int limit){
+void Channel::setLimit(int limit) {
 	this->limit = limit;
 }
 
@@ -88,7 +88,6 @@ void Channel::removeClient(Client* client) {
         Client* newOp = members.front();
         addOperator(newOp);
 
-        // Send MODE command to set the new operator
         std::string modeMsg = ":FT_irc MODE " + getName() + " +o " + newOp->getNickName() + "\r\n";
         broadcast(modeMsg, "");
     }
@@ -108,11 +107,11 @@ std::string Channel::getName() {
     return name;
 }
 
-std::string Channel::getPassword() {return password;} //changed
+std::string Channel::getPassword() {return password;}
 
 void Channel::setPassword(std::string pass) {
     password = pass;
-} //changed
+}
 
 void Channel::addMember(Client* client) {
     if (std::find(members.begin(), members.end(), client) == members.end()) {

@@ -56,6 +56,7 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
 			password = params[i + 1];
 		if (channel && !channel->getPassword().empty())
 		{
+			std::cout << GRE << channel->getName() << " - " << channel->getPassword() << "-> " << password << END << std::endl;
 			if (channel->getPassword() != password)
 			{
 				sendReplay(client->getFd(), ERR_BADCHANNELKEY(client->getNickName(), channelName));

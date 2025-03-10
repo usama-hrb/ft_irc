@@ -12,7 +12,6 @@ void Server::handleNick(Client* client, const std::vector<std::string>& params) 
         sendReplay(client->getFd(), ERR_ERRONEUSNICKNAME(client->getNickName(), nickname));
         return;
     }
-    // Check nickname collision
     for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
         if (it->second->getNickName() == nickname) {
             sendReplay(client->getFd(), ERR_NICKNAMEINUSE(client->getNickName(), nickname));
@@ -23,7 +22,6 @@ void Server::handleNick(Client* client, const std::vector<std::string>& params) 
 	authenticateClient(client);
 }
 
-// Utility function
 bool Server::isValidNickname(const std::string& nickname) {
     if (nickname.empty() || nickname.length() > 9)
         return false;

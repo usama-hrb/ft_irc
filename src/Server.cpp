@@ -194,7 +194,7 @@ void Server::authenticateClient(Client *client) {
 }
 
 void Server::welcomingMessage(Client* client) const {
-	sendReplay(client->getFd(), RPL_WELCOME(client->getNickName()));
+	sendReplay(client->getFd(), RPL_WELCOME(client->getNickName(), client->getUserName(), client->getClientIp()));
 	sendReplay(client->getFd(), RPL_YOURHOST(client->getNickName()));
 	sendReplay(client->getFd(), RPL_CREATED(client->getNickName()));
 	sendReplay(client->getFd(), RPL_MYINFO(client->getNickName()));
