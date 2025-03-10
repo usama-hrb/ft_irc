@@ -3,22 +3,42 @@
 
 
 void Server::handleNick(Client* client, const std::vector<std::string>& params) {
+    if (!client->hasPassword()) {
+        sendReplay(client->getFd(), ERR_NOTREGISTERED(std::string("*")));
+        return;
+    }
+    if (params.size() != 1) {
+        sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("NICK")));
+        return;
+    }
     if (params.empty()) {
         sendReplay(client->getFd(), ERR_NONICKNAMEGIVEN(client->getNickName()));
         return;
     }
+
     std::string nickname = params[0];
+
+    if (client->getNickName() == nickname) return;
+
     if (!isValidNickname(nickname)) {
         sendReplay(client->getFd(), ERR_ERRONEUSNICKNAME(client->getNickName(), nickname));
         return;
     }
-    for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
-        if (it->second->getNickName() == nickname) {
-            sendReplay(client->getFd(), ERR_NICKNAMEINUSE(client->getNickName(), nickname));
-            return;
-        }
+    if (findClientByNickname(nickname)) {
+        sendReplay(client->getFd(), ERR_NICKNAMEINUSE(client->getNickName(), nickname));
+        return;
     }
+
+    std::string oldNick = client->getNickName();
     client->setNickName(nickname);
+
+    std::string msg = ":" + oldNick + " NICK :" + nickname + "\r\n";
+    
+    for (std::vector<Channel*>::iterator it = _channelManager.Channels.begin(); it != _channelManager.Channels.end(); ++it) {
+        Channel* channel = *it;
+        if (channel->isMember(client))
+            channel->broadcast(msg, oldNick);
+    }
 	authenticateClient(client);
 }
 

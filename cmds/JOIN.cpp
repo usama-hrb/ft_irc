@@ -17,7 +17,6 @@ std::vector<std::string> split(const std::string& str, char delimiter)
 }
 
 void Server::handleJoin(Client* client, const std::vector<std::string>& params) {
-	
     if (!client->isRegistred()) {
         sendReplay(client->getFd(), ERR_NOTREGISTERED(std::string("*")));
         return;
@@ -26,9 +25,33 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
         sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("JOIN")));
         return;
     }
-	std::vector<std::string> channels = split(params[0], ',') ;
+	std::vector<std::string> channels = split(params[0], ',');
+	std::vector<std::string> passwords;
+	if (params.size() > 1) {
+	    std::string passParam = params[1];
+	    if (!passParam.empty() && passParam[0] == ':') {
+	        passParam = passParam.substr(1);
+	    }
+
+	    std::istringstream iss(passParam);
+	    std::string token;
+	    while (std::getline(iss, token, ' ')) {
+	        if (!token.empty()) {
+	            std::istringstream tokenStream(token);
+	            std::string subToken;
+	            while (std::getline(tokenStream, subToken, ',')) {
+	                if (!subToken.empty())
+	                    passwords.push_back(subToken);
+	            }
+	        }
+	    }
+	}
 	for(size_t i = 0; i < channels.size(); i++)
 	{
+		if (channels[i] == "#") {
+	        sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("JOIN")));
+	        return;
+		}
 		std::string channelName = channels[i];
 		if (channelName[0] != '#') {
 			sendReplay(client->getFd(), ERR_NOSUCHCHANNEL(client->getNickName(), channelName));
@@ -51,12 +74,13 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
 				continue;
 			}
 		}
-		std::string password = "";
-		if (i + 1 < params.size())
-			password = params[i + 1];
+		std::string password = (i < passwords.size()) ? passwords[i] : "";
+		if (channel && channel->isMember(client)) {
+            sendReplay(client->getFd(), ERR_USERONCHANNEL(client->getNickName(), client->getNickName(), channelName));
+            continue;
+        }
 		if (channel && !channel->getPassword().empty())
 		{
-			std::cout << GRE << channel->getName() << " - " << channel->getPassword() << "-> " << password << END << std::endl;
 			if (channel->getPassword() != password)
 			{
 				sendReplay(client->getFd(), ERR_BADCHANNELKEY(client->getNickName(), channelName));
@@ -68,10 +92,8 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
 		{
 			hasChannel = 1;
 			channel = _channelManager.CreatChannel(channelName);
-			if (params.size() > i + 1 && !params[i + 1].empty())
-			{
-				channel->setPassword(params[i + 1]);
-			}
+			if (!password.empty())
+				channel->setPassword(password);
 			channel->addOperator(client);
 		}
 		channel->addMember(client);

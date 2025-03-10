@@ -46,12 +46,6 @@ public:
 	Client* searchForMember(std::string nickname);
 	void addOp(std::string newOp);
 	void removeOp(std::string newOp);
-	void	print_Op(){
-		for(size_t i = 0; i < operators.size(); i++)
-		{
-			std::cout << "==+++====+++++++>" << operators[i]->getNickName() << " \n";
-		}
-	}
 };
 
 class ChannelManager {

@@ -166,11 +166,7 @@ void Channel::removeOp(std::string nickname)
 {
     for (std::vector<Client*>::iterator it = operators.begin(); it != operators.end(); ++it) {
         if ((*it)->getNickName() == nickname)
-		{
-			std::cout << "---------->>>>>>" << nickname << std::endl; //Hadchii rah ghadii tnssah hna asahbi
-            operators.erase(it);
-			return;
-		}
+            operators.erase(it);return;
     }
 }
 

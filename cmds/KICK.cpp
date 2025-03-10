@@ -11,16 +11,9 @@ void Server::handleKick(Client* client, const std::vector<std::string>& params)
         sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("KICK")));
         return;
     }
-	std::string reason;
     std::string channelName = params[0];
     std::string nickname = params[1];
-	std::vector<std::string> messages(params.begin() + 2, params.end());
-	if (params.size() > 2) {
-		for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it) {
-            reason += *it + " ";
-        }
-	} else
-		reason = "Kicked by operator";
+	std::string reason = (params[2].empty()) ? "Kicked by operator" : params[2];
     Channel* channel = _channelManager.search_for_channel(channelName);
     if (!channel)
     {
@@ -38,7 +31,7 @@ void Server::handleKick(Client* client, const std::vector<std::string>& params)
 		sendReplay(client->getFd(), ERR_NOSUCHNICK(client->getNickName()));
 		return ;
 	}
-    std::string kickMsg = ":" + client->getNickName() + " KICK " + channelName + " " + nickname + " " + reason + "\r\n";
+    std::string kickMsg = ":" + client->getNickName() + " KICK " + channelName + " " + nickname + " :" + reason + "\r\n";
 
     channel->removeMember(nickname, kickMsg);
     channel->broadcast(kickMsg, "");
@@ -55,7 +48,5 @@ void Server::handleKick(Client* client, const std::vector<std::string>& params)
     std::string endOfNames = RPL_ENDOFNAMES(client->getNickName(), channelName);
 
     if (channel->isEmpty())
-    {
         _channelManager.removeChannel(channelName);
-    }
 }

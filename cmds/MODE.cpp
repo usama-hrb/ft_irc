@@ -6,7 +6,6 @@ void Server::sendNotice(Client* client, const std::string& message) {
     sendReplay(client->getFd(), msg);
 }
 
-
 void Server::handleMode(Client* client, const std::vector<std::string>& params)
 {
 
@@ -51,7 +50,11 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 					sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("MODE")));
 					return;
 				}
-				channel->setTopic(params[2]);
+				std::vector<std::string> vecTopic(params.begin() + 2, params.end());
+			    std::string newTopic = ":";
+				for (std::vector<std::string>::iterator it = vecTopic.begin(); it != vecTopic.end(); it++)
+					newTopic += *it + " ";
+				channel->setTopic(newTopic);
 			}
 			else
 				channel->setTopic("No topic is set");
@@ -101,7 +104,6 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 					return ;
 				}
 				channel->removeOp(mem->getNickName());
-				channel->print_Op();
 			}
 
 		}
@@ -145,10 +147,5 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 		sendReplay(client->getFd(), ERR_NOCHANMODES(client->getNickName(), channelName));
 		return ;
 	}
-	std::string param = "";
-
-	if (params.size() > 2)
-		channel->modeBroadcast(RPL_CHANGEMODE(channelName, params[1], params[2]));
-	else
-	 	channel->modeBroadcast(RPL_CHANGEMODE(channelName, params[1], param));
+	channel->modeBroadcast(RPL_CHANGEMODE(channelName, params[1], ""));
 }

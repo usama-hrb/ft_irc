@@ -2,15 +2,17 @@
 #include "../inc/Server.hpp"
 
 void Server::handleUser(Client *client, const std::vector<std::string> &params) {
+	if (!client->hasPassword()) {
+        sendReplay(client->getFd(), ERR_NOTREGISTERED(std::string("*")));
+        return;
+    }
 	std::string response;
 	if (client->isRegistred()) {
-		response = ERR_ALREADYREGISTRED(std::string("*"));
-		sendReplay(client->getFd(), response);
+		sendReplay(client->getFd(), ERR_ALREADYREGISTRED(std::string("*")));
 		return;
 	}
 	if (params.size() < 4) {
-		response = ERR_NEEDMOREPARAMS(std::string("USER"));
-		sendReplay(client->getFd(), response);
+		sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("USER")));
 		return;
 	}
 	client->setUserName(params[0]);

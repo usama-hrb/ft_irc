@@ -34,10 +34,7 @@ void Server::handleTopic(Client* client, const std::vector<std::string>& params)
             return;
         }
 
-		std::vector<std::string> vecTopic(params.begin() + 1, params.end());
-        std::string newTopic;
-		for (std::vector<std::string>::iterator it = vecTopic.begin(); it != vecTopic.end(); it++)
-			newTopic += *it + " ";
+        std::string newTopic = (params[1].empty()) ? "" : params[1];
         channel->setTopic(newTopic);
 
         if (newTopic[0] == ':')

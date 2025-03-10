@@ -84,7 +84,7 @@ void Server::handleClientData(int clientFd) {
 	std::cout << GRA << "--> " <<  client->getBuffer().substr(0, client->getBuffer().find_last_of('\n')) << END << std::endl;
 
     size_t pos;
-   while (true) {
+   	while (true) {
         pos = client->getBuffer().find("\r\n");
         if (pos != std::string::npos) {
             std::string message = client->getBuffer().substr(0, pos);
