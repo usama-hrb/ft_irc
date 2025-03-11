@@ -83,7 +83,6 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 			Client* mem = searchForUser(params[2]);
 			if (sign == '+')
 			{
-
 				if (!channel->isMember(mem))
 				{
 					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2]));
@@ -107,6 +106,7 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 			}
 
 		}
+		
 		else if (params[1][1] == 'l')
 		{
 			if (sign == '+')
@@ -147,5 +147,8 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 		sendReplay(client->getFd(), ERR_NOCHANMODES(client->getNickName(), channelName));
 		return ;
 	}
-	channel->modeBroadcast(RPL_CHANGEMODE(channelName, params[1], ""));
+	if (params.size() > 2)
+		channel->modeBroadcast(RPL_CHANGEMODE(channelName, params[1], params[2]));
+	else
+	 	channel->modeBroadcast(RPL_CHANGEMODE(channelName, params[1], ""));
 }
