@@ -113,6 +113,25 @@ void Channel::setPassword(std::string pass) {
     password = pass;
 }
 
+void Channel::setModes(char mode)
+{
+	modes.push_back(mode);
+}
+
+std::vector<char> Channel::getModes()
+{
+	return modes;
+}
+
+void Channel::removeMode(char mode)
+{
+	for (std::vector<char>::iterator it = modes.begin(); it != modes.end(); ++it) {
+    	if ((*it) == mode) {
+            modes.erase(it); return;
+		}
+    }
+}
+
 void Channel::addMember(Client* client) {
     if (std::find(members.begin(), members.end(), client) == members.end()) {
         members.push_back(client);
@@ -165,8 +184,9 @@ bool Channel::removeMember(std::string nickname, std::string msg)
 void Channel::removeOp(std::string nickname)
 {
     for (std::vector<Client*>::iterator it = operators.begin(); it != operators.end(); ++it) {
-        if ((*it)->getNickName() == nickname)
-            operators.erase(it);return;
+        if ((*it)->getNickName() == nickname) {
+            operators.erase(it); return;
+		}
     }
 }
 

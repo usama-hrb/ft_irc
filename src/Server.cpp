@@ -81,7 +81,9 @@ void Server::handleClientData(int clientFd) {
     Client* client = _clients[clientFd];
 	client->appendToBuffer(buffer);
 	
-	std::cout << GRA << "--> " <<  client->getBuffer().substr(0, client->getBuffer().find_last_of('\n')) << END << std::endl;
+	std::string buff = client->getBuffer();
+	if (buff.substr(0, 4) != "PING" && buff.substr(0, 4) != "PONG")
+		std::cout << GRA << "--> " <<  client->getBuffer().substr(0, client->getBuffer().find_last_of('\n')) << END << std::endl;
 
     size_t pos;
    	while (true) {

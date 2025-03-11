@@ -8,12 +8,11 @@ void Server::sendNotice(Client* client, const std::string& message) {
 
 void Server::handleMode(Client* client, const std::vector<std::string>& params)
 {
-
 	if (!client->isRegistred()) {
         sendReplay(client->getFd(), ERR_NOTREGISTERED(std::string("*")));
         return;
     }
-    if (params.empty() || params.size() < 2)
+    if (params.empty())
 	{
         sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("MODE")));
         return;
@@ -26,6 +25,19 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 		sendReplay(client->getFd(), ERR_NOSUCHCHANNEL(client->getNickName(), channelName));
 		return ;
 	}
+	if (params.size() == 1)
+	{
+		std::string modes = "";
+		for (size_t i = 0; i < channel->getModes().size(); i++)
+		{
+			modes += channel->getModes()[i];
+		}
+		std::string modeMsg = ": 324 " + client->getNickName() + " " + channelName + " " + (modes.empty() ? "(no modes set)" : "+" + modes) + "\r\n";
+		sendReplay(client->getFd(), modeMsg);
+
+
+		return;
+	}
 	if (!channel->isOperator(client))
     {
         sendReplay(client->getFd(), ERR_CHANOPRIVSNEEDED(channelName));
@@ -36,20 +48,28 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 		char sign = params[1][0];
 		if (params[1][1] == 'i')
 		{
+			if (params.size() > 2) {
+				sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2]));
+				return;
+			}
 			if (sign == '+')
+			{
 				channel->setInviteOnly(1);
+				channel->setModes('i');
+			}
 			else
+			{
 				channel->setInviteOnly(0);
+				channel->removeMode('i');
+			}
 		}
 		else if (params[1][1] == 't')
 		{
 			if (sign == '+')
 			{
-				if (params.size() < 3)
-				{
-					sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("MODE")));
-					return;
-				}
+				if (params.size() < 3) {
+					sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("MODE"))); return;
+				}	
 				std::vector<std::string> vecTopic(params.begin() + 2, params.end());
 			    std::string newTopic = ":";
 				for (std::vector<std::string>::iterator it = vecTopic.begin(); it != vecTopic.end(); it++)
@@ -57,27 +77,45 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 				channel->setTopic(newTopic);
 			}
 			else
+			{
+				if (params.size() > 2) {
+					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2])); return;
+				}	
 				channel->setTopic("No topic is set");
+			}
 		}
 		else if (params[1][1] == 'k')
 		{
 			if (sign == '+')
 			{
-				if (params.size() < 3)
-				{
-					sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("MODE")));
-					return;
+				if (params.size() < 3) {
+					sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("MODE"))); return;
+				}
+				if (params.size() > 3){
+					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2])); return;
 				}
 				channel->setPassword(params[2]);
+				channel->setModes('k');
 			}
 			else
+			{
+				if (params.size() > 2){
+					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2])); return;
+				}
 				channel->setPassword("");
+				channel->removeMode('k');
+			}
 		}
 		else if (params[1][1] == 'o')
 		{
 			if (params.size() < 3)
 			{
 				sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("MODE")));
+				return;
+			}
+			if (params.size() > 3)
+			{
+				sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2]));
 				return;
 			}
 			Client* mem = searchForUser(params[2]);
@@ -97,7 +135,8 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 			}
 			else 
 			{
-				if (!channel->isOperator(mem))
+				
+				if (!channel->isOperator(mem) || params.size() > 3)
 				{
 					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2]));
 					return ;
@@ -116,6 +155,11 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 					sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("MODE")));
 					return ;
 				}
+				if (params.size() > 3)
+				{
+					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2]));
+					return;
+				}
 				int lim = 0;
 				std::stringstream iss(params[2]);
 
@@ -132,9 +176,18 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 					return;
 				}
 				channel->setLimit(lim);
+				channel->setModes('l');
 			}
 			else
+			{
+				if (params.size() > 2)
+				{
+					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2]));
+					return;
+				}
 				channel->setLimit(0);
+				channel->removeMode('l');
+			}
 		}
 		else
 		{
@@ -142,7 +195,7 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 			return;
 		}
 	}
-	else
+	else if (!params[2].empty() && params[2] != "+sn")
 	{
 		sendReplay(client->getFd(), ERR_NOCHANMODES(client->getNickName(), channelName));
 		return ;

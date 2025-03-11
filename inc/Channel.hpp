@@ -10,6 +10,7 @@ private:
     std::string password; //changed
     std::vector<Client*> members;
     std::vector<Client*> operators;
+	std::vector<char> 		modes;
     std::string _topic;
 	// modes
 	int inviteOnly;
@@ -20,6 +21,9 @@ public:
 	bool isInviteOnly(std::string nickName);
 	bool checkEmptyOp();
 	void setFirtOp();
+	void setModes(char mode);
+	std::vector<char> getModes();
+	void removeMode(char mode);
 	void setInviteOnly(int flag);
 	int getInviteOnly();
 	void setLimit(int limit);

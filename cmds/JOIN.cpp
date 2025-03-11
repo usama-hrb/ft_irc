@@ -58,11 +58,12 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
 			continue;
 		}
 		Channel* channel = _channelManager.search_for_channel(channelName);
-		if (channel && channel->getInviteOnly() == 1)
+		std::string password = (i < passwords.size()) ? passwords[i] : "";
+		if (channel && !channel->getPassword().empty())
 		{
-			if (!channel->isInviteOnly(client->getNickName()))
+			if (channel->getPassword() != password)
 			{
-				sendReplay(client->getFd(), ERR_INVITEONLYCHAN(client->getNickName(),channelName));
+				sendReplay(client->getFd(), ERR_BADCHANNELKEY(client->getNickName(), channelName));
 				continue;
 			}
 		}
@@ -74,19 +75,18 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
 				continue;
 			}
 		}
-		std::string password = (i < passwords.size()) ? passwords[i] : "";
+		if (channel && channel->getInviteOnly() == 1)
+		{
+			if (!channel->isInviteOnly(client->getNickName()))
+			{
+				sendReplay(client->getFd(), ERR_INVITEONLYCHAN(client->getNickName(),channelName));
+				continue;
+			}
+		}
 		if (channel && channel->isMember(client)) {
             sendReplay(client->getFd(), ERR_USERONCHANNEL(client->getNickName(), client->getNickName(), channelName));
             continue;
         }
-		if (channel && !channel->getPassword().empty())
-		{
-			if (channel->getPassword() != password)
-			{
-				sendReplay(client->getFd(), ERR_BADCHANNELKEY(client->getNickName(), channelName));
-				continue;
-			}
-		}
 		int hasChannel = 0;
 		if (!channel)
 		{
