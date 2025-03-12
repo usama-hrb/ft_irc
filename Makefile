@@ -1,10 +1,10 @@
 CC		= c++
 
-CPPFLAGS	= -Wall -Wextra -Werror -std=c++98
+CPPFLAGS	= #-Wall -Wextra -Werror -std=c++98
 
 NAME 	= ircserv
 
-SRCS 	:= $(wildcard ./src/*.cpp ./cmds/*.cpp) 
+SRCS 	:= $(wildcard ./src/*.cpp ./cmds/*.cpp ./bot/*.cpp) 
 
 OBJS	= $(SRCS:%.cpp=%.o)
 

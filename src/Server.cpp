@@ -134,9 +134,9 @@ void Server::processCommand(Client* client, const std::string& command) {
 	else if (cmd == "PRIVMSG") handlePrivmsg(client, params);
 	else if (cmd == "MODE") handleMode(client, params);
 	else if (cmd == "QUIT") handleQuit(client, params);
-	// else if (cmd == "RPS") handleRPS(client,params);
-	// else if (cmd == "CHOOSE") handleChoose(client, params);
-	// else if (cmd == "ACCEPT") handleAccept(client, params);
+	else if (cmd == "RPS") handleRPS(client,params);
+	else if (cmd == "CHOOSE") handleChoose(client, params);
+	else if (cmd == "ACCEPT") handleAccept(client, params);
 	else if (cmd != "PONG" && cmd != "PING") {
 		response = ERR_UNKNOWNCOMMAND(cmd);
 		sendReplay(client->getFd(), response);

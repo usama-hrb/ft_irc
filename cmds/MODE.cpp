@@ -1,11 +1,5 @@
 #include "../inc/Server.hpp"
 
-void Server::sendNotice(Client* client, const std::string& message) {
-    std::string msg = ":FT_irc" " NOTICE " + client->getNickName() + 
-                     " :" + message + "\r\n";
-    sendReplay(client->getFd(), msg);
-}
-
 void Server::handleMode(Client* client, const std::vector<std::string>& params)
 {
 	if (!client->isRegistred()) {
@@ -172,7 +166,7 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 					}
 				}
 				if (lim < static_cast<int>(channel->getMemrbersNum())) {
-					sendNotice(client, "Channel mumbers more than limit you set!");
+					sendReplay(client->getFd(), _NOTICE(client->getNickName(), std::string("Channel mumbers more than limit you set!")));
 					return;
 				}
 				channel->setLimit(lim);

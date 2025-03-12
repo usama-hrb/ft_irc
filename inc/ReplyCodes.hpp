@@ -42,6 +42,10 @@
 #define RPL_QUIT(nickname, message) ":" + nickname + " QUIT : " + message + "\r\n"
 #define RPL_OPERATOR(nickname) ":" + nickname + " IS OPERATOR" "\r\n"
 
+//BOT
+#define _NOTICE(nickname, message) PREFIX " NOTICE " + nickname + " :" + message + POSTFIX
+
+
 #define SERV() "\n\
 ░██████╗███████╗██████╗░██╗░░░██╗███████╗██████╗░\n\
 ██╔════╝██╔════╝██╔══██╗██║░░░██║██╔════╝██╔══██╗\n\
