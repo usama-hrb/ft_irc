@@ -2,7 +2,6 @@
 
 #include "Needs.hpp"
 #include "Client.hpp"
-#include <vector>
 
 class Channel {
 private:

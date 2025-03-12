@@ -2,7 +2,6 @@
 #include "../inc/Needs.hpp"
 #include "../inc/Server.hpp"
 #include "../inc/Client.hpp"
-#include <algorithm>
 
 Channel::Channel(std::string new_name) : name(new_name), password(""), _topic("No topic is set"), inviteOnly(0), limit(0) {}
 
