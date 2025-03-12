@@ -4,7 +4,6 @@
 #include "Client.hpp"
 #include "ReplyCodes.hpp"
 #include "Channel.hpp"
-#include <cstdlib>
 
 
 class Server {

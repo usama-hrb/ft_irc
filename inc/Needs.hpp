@@ -13,6 +13,8 @@
 #include <map>
 #include <cstring>
 #include <sstream>
+#include <algorithm>
+#include <cstdlib>
 #include "ReplyCodes.hpp"
 
 
