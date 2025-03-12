@@ -87,6 +87,4 @@ class Server {
 		std::string replaceAll(std::string str, const std::string& from, const std::string& to);
 		void checkChallengeCompletion(Challenge& challenge);
 		void checkChallengeTimeouts();
-		void sendNotice(Client* client, const std::string& message);
-		void broadcastNotice(Channel* channel, const std::string& message) ;
 };
