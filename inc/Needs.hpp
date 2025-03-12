@@ -15,6 +15,7 @@
 #include <sstream>
 #include <algorithm>
 #include <cstdlib>
+#include <cerrno>
 #include "ReplyCodes.hpp"
 
 

@@ -105,7 +105,7 @@ void Server::handleChoose(Client* client, const std::vector<std::string>& params
         sendReplay(client->getFd(), _NOTICE(client->getNickName(), "No active RPS challenge in " + channelName));
 }
 
-void Server::handleAccept(Client* client, const std::vector<std::string>& params) {
+void Server::handleAccept(Client* client) {
     checkChallengeTimeouts();
     std::map<std::string, Challenge>::iterator it = activeChallenges.begin();
     for (; it != activeChallenges.end(); ++it) {

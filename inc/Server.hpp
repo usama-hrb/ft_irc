@@ -81,7 +81,7 @@ class Server {
 
 		std::map<std::string, Challenge> activeChallenges;
 		void handleRPS(Client* client, const std::vector<std::string>& params);
-		void handleAccept(Client* client, const std::vector<std::string>& params);
+		void handleAccept(Client* client);
 		void handleChoose(Client* client, const std::vector<std::string>& params);
 		void resolveRPS(const Challenge& challenge);
 		std::string replaceAll(std::string str, const std::string& from, const std::string& to);

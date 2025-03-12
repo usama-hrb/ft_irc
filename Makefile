@@ -4,23 +4,26 @@ CPPFLAGS	= -Wall -Wextra -Werror -std=c++98
 
 NAME 	= ircserv
 
-SRCS 	:= $(wildcard ./src/*.cpp ./cmds/*.cpp ./bot/*.cpp) 
+SRCS 	= 	bot/BOT.cpp \
+			cmds/INVITE.cpp cmds/JOIN.cpp cmds/KICK.cpp cmds/MODE.cpp cmds/NICK.cpp cmds/PASS.cpp cmds/PRIVMSG.cpp cmds/QUIT.cpp cmds/TOPIC.cpp cmds/USER.cpp \
+			src/Channel.cpp src/client.cpp src/main.cpp src/Server.cpp \
 
-OBJS	= $(SRCS:%.cpp=%.o)
+OBJS	= $(SRCS:%.cpp=$(OBJ_DIR)%.o)
 
 OBJ_DIR = .obj/
+
 
 all		: $(NAME)
 
 $(NAME) : $(OBJS)
 	$(CC) $(CPPFLAGS) $(OBJS) -o $(NAME)
 
-%.o : %.cpp
+$(OBJ_DIR)%.o : %.cpp
+	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -c $< -o $@ -MMD
 
 clean	:
-	rm -f  $(SRCS:.cpp=.d)
-	rm -f $(OBJS)
+	rm -rf $(OBJ_DIR)
 
 fclean	: clean
 	rm -f $(NAME)
@@ -29,4 +32,4 @@ re		: fclean all
 
 .PHONY	: clean
 
--include $(SRCS:.cpp=.d)
+-include $(SRCS:%.cpp=$(OBJ_DIR)%.d)

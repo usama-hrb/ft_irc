@@ -87,10 +87,8 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
             sendReplay(client->getFd(), ERR_USERONCHANNEL(client->getNickName(), client->getNickName(), channelName));
             continue;
         }
-		int hasChannel = 0;
 		if (!channel)
 		{
-			hasChannel = 1;
 			channel = _channelManager.CreatChannel(channelName);
 			if (!password.empty())
 				channel->setPassword(password);
