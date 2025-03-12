@@ -1,7 +1,7 @@
 #include "../inc/Server.hpp"
 
 //********************//
-//        BOT        //
+//        BOT         //
 //********************//
 
 void Server::checkChallengeCompletion(Challenge& challenge) {
@@ -55,11 +55,12 @@ void Server::checkChallengeTimeouts() {
 }
 
 void Server::handleChoose(Client* client, const std::vector<std::string>& params) {
+    checkChallengeTimeouts();
     if (params.size() < 2) {
         sendReplay(client->getFd(), _NOTICE(client->getNickName(), "Syntax: /choose <rock|paper|scissors> <channel>"));
         return;
     }
-
+    
     std::string choice = params[0];
     std::string channelName = params[1];
     std::transform(choice.begin(), choice.end(), choice.begin(), ::tolower);
@@ -82,6 +83,10 @@ void Server::handleChoose(Client* client, const std::vector<std::string>& params
                     sendReplay(target->getFd(), _NOTICE(target->getNickName(), "[RPS] " + it->second.challenger + " has chosen. Your turn!"));
             }
         } else if (client->getNickName() == it->second.target) {
+            if (!it->second.accepted) {
+                sendReplay(client->getFd(), _NOTICE(client->getNickName(), "You must accept the challenge before choosing"));
+                return;
+            }
             it->second.target_choice = choice;
             found = true;
 			if (it->second.challenger_choice.empty()) {
@@ -101,6 +106,7 @@ void Server::handleChoose(Client* client, const std::vector<std::string>& params
 }
 
 void Server::handleAccept(Client* client, const std::vector<std::string>& params) {
+    checkChallengeTimeouts();
     std::map<std::string, Challenge>::iterator it = activeChallenges.begin();
     for (; it != activeChallenges.end(); ++it) {
         if (it->second.target == client->getNickName()) {

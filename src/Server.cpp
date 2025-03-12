@@ -124,6 +124,7 @@ void Server::processCommand(Client* client, const std::string& command) {
 		}
 		params.push_back(param);
 	}
+	std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::toupper);
 	if (cmd == "PASS") handlePass(client, params);
 	else if (cmd == "NICK") handleNick(client, params);
 	else if (cmd == "USER") handleUser(client, params);
