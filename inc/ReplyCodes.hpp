@@ -2,7 +2,7 @@
 #include "Needs.hpp"
 
 #define PREFIX ":FT_irc "
-#define POSTFIX "\r\n"
+#define POSTFIX "\r\n" 
 
 // Existing Codes
 #define RPL_WELCOME(nickname, username, ipaddress) PREFIX " 001 " + nickname + " :Welcome to the Internet Relay Network (" + nickname + "!" + username + "@" + ipaddress + ")" + POSTFIX
