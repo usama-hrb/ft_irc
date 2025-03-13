@@ -11,7 +11,7 @@ Client::Client(int fd) : _fd(fd), _hasPassword(false), _hasNickName(false), _has
 		throw std::runtime_error("inet_ntop failed");
     _clientIp = std::string(clientIp);
 }
-
+ 
 std::string Client::getClientInfo() const {
     return _nickName + "!" + _userName + "@" + _clientIp;
 }
