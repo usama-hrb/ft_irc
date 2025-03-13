@@ -6,7 +6,7 @@ NAME 	= ircserv
 
 SRCS 	= 	bot/BOT.cpp \
 			cmds/INVITE.cpp cmds/JOIN.cpp cmds/KICK.cpp cmds/MODE.cpp cmds/NICK.cpp cmds/PASS.cpp cmds/PRIVMSG.cpp cmds/QUIT.cpp cmds/TOPIC.cpp cmds/USER.cpp \
-			src/Channel.cpp src/Client.cpp src/main.cpp src/Server.cpp \
+			src/Channel.cpp src/client.cpp src/main.cpp src/Server.cpp \
 
 OBJS	= $(SRCS:%.cpp=$(OBJ_DIR)%.o)
 
