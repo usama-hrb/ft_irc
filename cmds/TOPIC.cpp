@@ -29,7 +29,7 @@ void Server::handleTopic(Client* client, const std::vector<std::string>& params)
         std::string topic = channel->getTopic();
             sendReplay(client->getFd(), RPL_TOPIC(topic, client->getNickName(), channelName));
     } else {
-        if (!channel->isOperator(client)) {
+        if (!channel->isOperator(client) && channel->getTopicMode()) {
             sendReplay(client->getFd(), ERR_CHANOPRIVSNEEDED(channelName));
             return;
         }

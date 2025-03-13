@@ -14,8 +14,11 @@ private:
 	// modes
 	int inviteOnly;
 	int  limit;
+	bool topicMode;
 
 public:
+	void setTopicMode(bool state);
+	bool getTopicMode();
 	std::vector<Client*> 			_invitedClients;
 	bool isInviteOnly(std::string nickName);
 	bool checkEmptyOp();
@@ -31,6 +34,7 @@ public:
 	void	addInvitedOnly(Client* invitedClient);
     std::string getTopic() const;
     size_t getMemrbersNum();
+    size_t getOpNum();
     Channel(std::string new_name);
     std::string getName();
 	std::string getPassword();//changed
@@ -41,7 +45,7 @@ public:
     bool isMember(Client* client);
     bool checkForClient(std::string client_name);
 	bool isEmpty();
-    bool removeMember(std::string nickname, std::string msg);
+    void removeUser(std::string nickname, std::string msg);
     void broadcast(const std::string &msg, std::string senderNick);
 	void modeBroadcast(const std::string &msg);
     std::vector<std::string> getMemberNames();
@@ -49,6 +53,8 @@ public:
 	Client* searchForMember(std::string nickname);
 	void addOp(std::string newOp);
 	void removeOp(std::string newOp);
+	bool opIsEmpty();
+	Client *firstMumber();
 };
 
 class ChannelManager {

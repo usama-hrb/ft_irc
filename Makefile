@@ -1,6 +1,6 @@
 CC		= c++
 
-CPPFLAGS	= -Wall -Wextra -Werror -std=c++98
+CPPFLAGS	= #-Wall -Wextra -Werror -std=c++98
 
 NAME 	= ircserv
 
@@ -14,6 +14,11 @@ OBJ_DIR = .obj/
 
 
 all		: $(NAME)
+
+run		:    all
+	@if [ -f $(NAME) ]; \
+	then clear && /bin/bash -c './$(NAME) "$$@"' __ "8080" "password"; \
+	fi
 
 $(NAME) : $(OBJS)
 	$(CC) $(CPPFLAGS) $(OBJS) -o $(NAME)

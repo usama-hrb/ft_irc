@@ -33,7 +33,14 @@ void Server::handleKick(Client* client, const std::vector<std::string>& params)
 	}
     std::string kickMsg = ":" + client->getNickName() + " KICK " + channelName + " " + nickname + " :" + reason + "\r\n";
 
-    channel->removeMember(nickname, kickMsg);
+    channel->removeUser(nickname, kickMsg);
+     if (channel->opIsEmpty()) {
+        Client* newOp = channel->firstMumber();
+        channel->addOperator(newOp);
+
+        std::string modeMsg = ":FT_irc MODE " + channel->getName() + " +o " + newOp->getNickName() + "\r\n";
+        channel->broadcast(modeMsg, "");
+    }
     channel->broadcast(kickMsg, "");
 
 

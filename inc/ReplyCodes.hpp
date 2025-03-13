@@ -21,8 +21,12 @@
 #define ERR_CHANNELISFULL(nick, channelName) PREFIX " 471 " + nick + " " + channelName + " :Cannot join channel (+l) - channel is full" + POSTFIX
 #define ERR_NOCHANMODES(nickname, channel) PREFIX " 477 " + nickname + " " + channel + " :Channel doesn't support modes" + POSTFIX
 #define ERR_BADCHANNELKEY(nick, channelName) PREFIX " 475 " + nick + " " + channelName + " :Cannot join channel (+k) - bad key" + POSTFIX
-#define ERR_INVALIDMODEPARAM(nickname, channel, param) PREFIX " 696 " + nickname + " " + channel + " " + param + " :Invalid mode parameter" + POSTFIX
+#define ERR_INVALIDMODEPARAM(nickname, channel, param) PREFIX " 500 " + nickname + " " + channel + " " + param + " :Invalid mode parameter" + POSTFIX
 #define RPL_CHANNELMODEIS(nickname, channel, mode, params) PREFIX " 324 " + nickname + " " + channel + " " + mode + " " + params + POSTFIX
+#define ERR_USERNOTINCHANNEL(nickname, channel) PREFIX " 441 " + nickname + " " + channel + " " + " :They aren't on that channel" + POSTFIX
+#define ERR_KEYSET(channel) PREFIX " 467 " + channel + " " + " :Channel key already set" + POSTFIX
+#define ERR_OPSET(nick) PREFIX " 491 " + nick + " " + " :Already operator" + POSTFIX
+#define ERR_OP(nick) PREFIX " 494 " + nick + " " + " :You are the only operator" + POSTFIX
 #define RPL_CHANGEMODE(chName, mode, arguments ) PREFIX " MODE " + chName + " " + mode + " " + arguments + POSTFIX
 
 // New Codes for Channels
@@ -40,7 +44,9 @@
 #define RPL_INVITING(inviting, invited, channel) PREFIX " 341 " + inviting + " " + invited + " " + channel + POSTFIX
 #define RPL_INVITED(nick, invited, channel, info)   ":" + info + " INVITE " + invited + " :" + channel + POSTFIX
 #define RPL_QUIT(nickname, message) ":" + nickname + " QUIT : " + message + "\r\n"
-#define RPL_OPERATOR(nickname) ":" + nickname + " IS OPERATOR" "\r\n"
+#define RPL_OPERATOR(nickname) ":" + nickname + " IS OPERATOR" POSTFIX
+#define RPL_ISNOTOP(nickname) PREFIX " 492 " + nickname + " Is not operator" POSTFIX
+#define ERR_INVALIDLIMIT(nickname) PREFIX " 493 " + nickname + " Channel mumbers more than limit you set!" POSTFIX
 
 //BOT
 #define _NOTICE(nickname, message) PREFIX " NOTICE " + nickname + " :" + message + POSTFIX

@@ -90,8 +90,6 @@ void Server::handleJoin(Client* client, const std::vector<std::string>& params) 
 		if (!channel)
 		{
 			channel = _channelManager.CreatChannel(channelName);
-			if (!password.empty())
-				channel->setPassword(password);
 			channel->addOperator(client);
 		}
 		channel->addMember(client);

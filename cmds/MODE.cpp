@@ -48,11 +48,19 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 			}
 			if (sign == '+')
 			{
+				if (channel->getInviteOnly()) {
+					sendReplay(client->getFd(), ERR_KEYSET(channelName));
+					return;
+				}
 				channel->setInviteOnly(1);
 				channel->setModes('i');
 			}
 			else
 			{
+				if (!channel->getInviteOnly()) {
+					sendReplay(client->getFd(), ERR_KEYSET(channelName));
+					return;
+				}
 				channel->setInviteOnly(0);
 				channel->removeMode('i');
 			}
@@ -61,21 +69,18 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 		{
 			if (sign == '+')
 			{
-				if (params.size() < 3) {
-					sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("MODE"))); return;
+				if (params.size() > 2) {
+					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2]));
+					return;
 				}	
-				std::vector<std::string> vecTopic(params.begin() + 2, params.end());
-			    std::string newTopic = ":";
-				for (std::vector<std::string>::iterator it = vecTopic.begin(); it != vecTopic.end(); it++)
-					newTopic += *it + " ";
-				channel->setTopic(newTopic);
+				channel->setTopicMode(true);
 			}
 			else
 			{
 				if (params.size() > 2) {
 					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2])); return;
 				}	
-				channel->setTopic("No topic is set");
+				channel->setTopicMode(false);
 			}
 		}
 		else if (params[1][1] == 'k')
@@ -85,7 +90,7 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 				if (params.size() < 3) {
 					sendReplay(client->getFd(), ERR_NEEDMOREPARAMS(std::string("MODE"))); return;
 				}
-				if (params.size() > 3){
+				if (params.size() > 3) {
 					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2])); return;
 				}
 				channel->setPassword(params[2]);
@@ -117,23 +122,32 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 			{
 				if (!channel->isMember(mem))
 				{
-					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2]));
+					sendReplay(client->getFd(), ERR_USERNOTINCHANNEL(client->getNickName()      ,channelName));
 					return ;
 				}
 				if (channel->isOperator(mem))
 				{
-					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2]));
+					sendReplay(client->getFd(), ERR_OPSET(client->getNickName()));
 					return ;
 				}
 				channel->addOp(mem->getNickName());
 			}
 			else 
 			{
-				
-				if (!channel->isOperator(mem) || params.size() > 3)
+				if (params.size() > 3)
 				{
 					sendReplay(client->getFd(), ERR_INVALIDMODEPARAM(client->getNickName(), channelName, params[2]));
 					return ;
+				}
+				if (!channel->isOperator(mem))
+				{
+					sendReplay(client->getFd(), RPL_ISNOTOP(mem->getNickName()));
+					return ;
+				}
+				if (channel->getOpNum() == 1)
+				{
+					sendReplay(client->getFd(), ERR_OP(mem->getNickName()));
+					return;
 				}
 				channel->removeOp(mem->getNickName());
 			}
@@ -166,7 +180,7 @@ void Server::handleMode(Client* client, const std::vector<std::string>& params)
 					}
 				}
 				if (lim < static_cast<int>(channel->getMemrbersNum())) {
-					sendReplay(client->getFd(), _NOTICE(client->getNickName(), std::string("Channel mumbers more than limit you set!")));
+					sendReplay(client->getFd(), ERR_INVALIDLIMIT(client->getNickName()));
 					return;
 				}
 				channel->setLimit(lim);

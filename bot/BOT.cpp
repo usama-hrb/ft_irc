@@ -27,7 +27,7 @@ void Server::checkChallengeCompletion(Challenge& challenge) {
                 " beats " + challenge.challenger_choice;
     }
 
-    channel->broadcast("RPS Result: " + result, "");
+    channel->broadcast(_NOTICE(channel->getName(), "RPS Result: " + result), "");
     activeChallenges.erase(challenge.challenger);
 }
 

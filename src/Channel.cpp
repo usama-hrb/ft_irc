@@ -93,6 +93,8 @@ void Channel::removeClient(Client* client) {
 }
 size_t Channel::getMemrbersNum() {return members.size();}
 
+size_t Channel::getOpNum() {return operators.size();}
+
 void Channel::setTopic(const std::string &newTopic) {
        _topic = newTopic;
 }
@@ -114,6 +116,10 @@ void Channel::setPassword(std::string pass) {
 
 void Channel::setModes(char mode)
 {
+    for (std::vector<char>::iterator it = modes.begin(); it != modes.end(); it++) {
+        if (*it == mode)
+            return;
+    }
 	modes.push_back(mode);
 }
 
@@ -167,17 +173,41 @@ bool Channel::isEmpty()
 	return false;
 }
 
-bool Channel::removeMember(std::string nickname, std::string msg)
+void Channel::setTopicMode(bool state) {
+    topicMode = state;
+}
+bool Channel::getTopicMode() {
+    return topicMode;
+}
+
+void Channel::removeUser(std::string nickname, std::string msg)
 {
     for (std::vector<Client*>::iterator it = members.begin(); it != members.end(); ++it) {
         if ((*it)->getNickName() == nickname)
 		{
 			send((*it)->getFd(), msg.c_str(), msg.size(), 0);
             members.erase(it);
-            return true;
+            break;
         }
     }
+    for (std::vector<Client*>::iterator it = operators.begin(); it != operators.end(); ++it) {
+        if ((*it)->getNickName() == nickname)
+		{
+			// send((*it)->getFd(), msg.c_str(), msg.size(), 0);
+            operators.erase(it);
+            break;
+        }
+    }
+}
+
+bool Channel::opIsEmpty() {
+    if (operators.empty())
+        return true;
     return false;
+}
+
+Client * Channel::firstMumber() {
+    return members.front();
 }
 
 void Channel::removeOp(std::string nickname)

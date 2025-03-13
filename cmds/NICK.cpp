@@ -17,6 +17,7 @@ void Server::handleNick(Client* client, const std::vector<std::string>& params) 
     }
 
     std::string nickname = params[0];
+    std::transform(nickname.begin(), nickname.end(), nickname.begin(), ::tolower);
 
     if (client->getNickName() == nickname) return;
 
