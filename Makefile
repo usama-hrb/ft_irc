@@ -17,7 +17,7 @@ all		: $(NAME)
 
 run		:    all
 	@if [ -f $(NAME) ]; \
-	then clear && /bin/bash -c './$(NAME) "$$@"' __ "8080" "password"; \
+	then clear && /bin/bash -c './$(NAME) "$$@"' __ "8080" "okokok"; \
 	fi
 
 $(NAME) : $(OBJS)

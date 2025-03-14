@@ -1,6 +1,6 @@
 #include "../inc/Server.hpp"
 
-std::vector<std::string> split(const std::string& str, char delimiter)
+std::vector<std::string> Server::split(const std::string& str, char delimiter)
 {
     std::vector<std::string> tokens;
     size_t start = 0;

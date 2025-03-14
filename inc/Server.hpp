@@ -48,6 +48,7 @@ class Server {
 		bool validatePassword(const std::string& input) const;
 	    void sendReplay(int fd, const std::string& response) const;
 		Client* findClientByNickname(const std::string& nickname);
+		std::vector<std::string> split(const std::string& str, char delimiter);
 
 	// Searsh funcs
 		Client* searchForUser(std::string nickname);
